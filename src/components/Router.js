@@ -3,6 +3,7 @@ import { HashRouter as Router, Route, Switch } from "react-router-dom"; //npm in
 import Auth from 'router/Auth';
 import Home from 'router/Home';
 import { authService } from 'fbase';
+import Chat from 'router/Chat';
 
 function AppRouter() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,9 +22,14 @@ function AppRouter() {
                             <Switch>
                             {
                                 isLoggedIn ? (
-                                    <Route exact path="/">
-                                        <Home />
-                                    </Route>
+                                    <React.Fragment>
+                                        <Route exact path="/">
+                                            <Home />
+                                        </Route>
+                                        <Route exact path="/chat">
+                                            <Chat />
+                                        </Route>
+                                    </React.Fragment>
                                 ):(
                                     <Route exact path="/">
                                         <Auth />

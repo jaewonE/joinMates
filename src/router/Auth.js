@@ -30,12 +30,20 @@ function Auth () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {isLoginPage, setPageState} = useSetSlideUpEvent();
+    const transitFormSignup = () => {
+        document.getElementById('login').classList.remove('opacity0');
+    }
+    const transitFormLogin = () => {
+        document.getElementById('login').classList.add('opacity0');
+    }
     const changePage = (e) => {
         let type = e.target.id;
         if(type==="signup") {
             setPageState("login");
+            transitFormSignup();
         }else if(type==="login") {
             setPageState("signup");
+            transitFormLogin();
         }
     }
     const onChange = (e) => {
@@ -65,33 +73,34 @@ function Auth () {
     }
     return(
         <div className="form-structor">
-        <form onSubmit={onSubmit} className="signup">
-        <h2 onClick={changePage} className="form-title" id="login"><span>or</span>Log in</h2>
-          <div className="form-holder">
-            <input required name="email" onChange={onChange} type="email" className="input" placeholder="Email" />
-            <input required name="password" onChange={onChange} type="password" className="input" placeholder="Password" />
-          </div>
-          <input value="Log in" type="submit" className="submit-btn" />
-          <button onClick={googleAccount} className="google_account">
-                <img alt="google_icon" id="google_icon" src={googlelogo} />
-                <span id="google_span">{isLoginPage ? "Login with Google" : "Sign up with Google"}</span>
-          </button>
-        </form>
-        <form onSubmit={onSubmit} className="login slide-up">
-          <div className="center">
-            <h2 onClick={changePage} className="form-title" id="signup"><span>or</span>Sign up</h2>
-            <div className="form-holder">
-              <input required name="email" onChange={onChange} type="email" className="input" placeholder="Email" />
-              <input required name="password" onChange={onChange} type="password" className="input" placeholder="Password" />
-            </div>
-            <input value="Sign up" type="submit" className="submit-btn" />
-            <button onClick={googleAccount} className="google_account">
-                <img alt="google_icon" id="google_icon" src={googlelogo} />
-                <span id="google_span">{isLoginPage ? "Login with Google" : "Sign up with Google"}</span>
-            </button>
-          </div>
-        </form>
-      </div>
+            <h1 id="app-name">JoinMates</h1>
+            <form onSubmit={onSubmit} className="signup">
+                <h2 onClick={changePage} className="form-title opacity0" id="login"><span>or</span>Log in</h2>
+                <div className="form-holder">
+                    <input required name="email" onChange={onChange} type="email" className="input" placeholder="Email" />
+                    <input required name="password" onChange={onChange} type="password" className="input" placeholder="Password" />
+                </div>
+                <input value="Log in" type="submit" className="submit-btn" />
+                <button onClick={googleAccount} className="google_account">
+                    <img alt="google_icon" id="google_icon" src={googlelogo} />
+                    <span id="google_span">{isLoginPage ? "Login with Google" : "Sign up with Google"}</span>
+                </button>
+            </form>
+            <form onSubmit={onSubmit} className="login slide-up">
+                <div className="center">
+                <h2 onClick={changePage} className="form-title" id="signup"><span>or</span>Sign up</h2>
+                <div className="form-holder">
+                <input required name="email" onChange={onChange} type="email" className="input" placeholder="Email" />
+                <input required name="password" onChange={onChange} type="password" className="input" placeholder="Password" />
+                </div>
+                <input value="Sign up" type="submit" className="submit-btn" />
+                <button onClick={googleAccount} className="google_account">
+                    <img alt="google_icon" id="google_icon" src={googlelogo} />
+                    <span id="google_span">{isLoginPage ? "Login with Google" : "Sign up with Google"}</span>
+                </button>
+                </div>
+            </form>
+        </div>
     )
 }
 
