@@ -26,10 +26,12 @@ function useSetSlideUpEvent() {
     return {isLoginPage, setPageState};
 }
 
-function Auth () {
+function Auth ({setUserObj}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [displayName, setDisplayName] = useState("set_your_name");
     const {isLoginPage, setPageState} = useSetSlideUpEvent();
+    const [trySuccess, setTrySuccess] = useState(false);
     const transitFormSignup = () => {
         document.getElementById('login').classList.remove('opacity0');
     }
@@ -52,18 +54,33 @@ function Auth () {
             setEmail(value);
         }else if(name==="password") {
             setPassword(value);
+        }else if(name==="userName") {
+            setDisplayName(value);
         }
     }
+    const setUserInfo = async() => {
+        const user = authService.currentUser;
+        await setUserObj({
+            displayName: displayName,
+            uid: user.uid,
+            updateProfile: (args) => user.updateProfile(args),
+        });
+    }
     const onSubmit = async(e) => {
-        e.preventDefault()
-        let switchValue = e.target[2].defaultValue;
-        let data;
-        if(switchValue === "Log in") {
-            data = authService.signInWithEmailAndPassword(email, password);
-        }else if(switchValue === "Sign up") {
-            data = authService.createUserWithEmailAndPassword(email, password);
-        }
-        await data.catch((error) => alert(error.message));
+        e.preventDefault();
+        try {
+            if(isLoginPage) {
+                await authService.signInWithEmailAndPassword(email, password).catch((error) => alert(error.message));
+            }else {
+                await authService.createUserWithEmailAndPassword(email, password).catch((error) => alert(error.message));
+            }
+            setTrySuccess(true);
+        } catch (error) {
+            console.error(error);
+            alert("Error in Login\nPlease check your console");
+            setTrySuccess(false);
+        } 
+        if(trySuccess) { await setUserInfo(); };
     }
     const googleAccount = async() => {
         let provider;
@@ -90,6 +107,7 @@ function Auth () {
                 <div className="center">
                 <h2 onClick={changePage} className="form-title" id="signup"><span>or</span>Sign up</h2>
                 <div className="form-holder">
+                <input required name="userName" onChange={onChange} type="text" maxLength="15" className="input" placeholder="Name" />
                 <input required name="email" onChange={onChange} type="email" className="input" placeholder="Email" />
                 <input required name="password" onChange={onChange} type="password" className="input" placeholder="Password" />
                 </div>
