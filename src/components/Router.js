@@ -55,24 +55,26 @@ function AppRouter() {
                                 Boolean(userObj) ? (
                                     <React.Fragment>
                                         <Navigation />
-                                        <Route exact path="/">
-                                            <Redirect to="/auth" />
-                                        </Route>
-                                        <Route exact path="/auth">
-                                            <Redirect to="/tchat" />
-                                        </Route>
-                                        <Route exact path="/profile">
-                                            <Profile />
-                                        </Route>
-                                        <Route exact path="/pchat">
-                                            <Pchat />
-                                        </Route>
-                                        <Route exact path="/tchat">
-                                            <Tchat userObj={userObj}/>
-                                        </Route>
-                                        <Route exact path="/setting">
-                                            <Setting refreshUser={refreshUser} userObj={userObj} />
-                                        </Route>
+                                            <div className="container">
+                                                <Route exact path="/">
+                                                    <Redirect to="/auth" />
+                                                </Route>
+                                                <Route exact path="/auth">
+                                                    <Redirect to="/tchat" />
+                                                </Route>
+                                                <Route exact path="/profile">
+                                                    <Profile />
+                                                </Route>
+                                                <Route exact path="/pchat">
+                                                    <Pchat />
+                                                </Route>
+                                                <Route exact path="/tchat">
+                                                    <Tchat userObj={userObj}/>
+                                                </Route>
+                                                <Route exact path="/setting">
+                                                    <Setting refreshUser={refreshUser} userObj={userObj} />
+                                                </Route>
+                                            </div>
                                     </React.Fragment>
                                 ):(
                                     <React.Fragment>

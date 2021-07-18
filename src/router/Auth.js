@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import googlelogo from 'router/Google_icon.png';
+import googlelogo from 'router/css/Google_icon.png';
 import { authService, firebaseInstance } from 'fbase';
-import './Auth.css';
+import 'router/css/Auth.css';
 
 function useSetSlideUpEvent() {
     const [pageState, setPageState] = useState("signup");
