@@ -26,12 +26,12 @@ function useSetSlideUpEvent() {
     return {isLoginPage, setPageState};
 }
 
-function Auth ({setUserObj}) {
+function Auth ({setDisplayName}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [displayName, setDisplayName] = useState("set_your_name");
+    const [userName, setUserName] = useState("");
     const {isLoginPage, setPageState} = useSetSlideUpEvent();
-    const [trySuccess, setTrySuccess] = useState(false);
+    let trySuccess = false;
     const transitFormSignup = () => {
         document.getElementById('login').classList.remove('opacity0');
     }
@@ -55,16 +55,8 @@ function Auth ({setUserObj}) {
         }else if(name==="password") {
             setPassword(value);
         }else if(name==="userName") {
-            setDisplayName(value);
+            setUserName(value);
         }
-    }
-    const setUserInfo = async() => {
-        const user = authService.currentUser;
-        await setUserObj({
-            displayName: displayName,
-            uid: user.uid,
-            updateProfile: (args) => user.updateProfile(args),
-        });
     }
     const onSubmit = async(e) => {
         e.preventDefault();
@@ -74,13 +66,15 @@ function Auth ({setUserObj}) {
             }else {
                 await authService.createUserWithEmailAndPassword(email, password).catch((error) => alert(error.message));
             }
-            setTrySuccess(true);
+            trySuccess = true;
         } catch (error) {
             console.error(error);
             alert("Error in Login\nPlease check your console");
-            setTrySuccess(false);
-        } 
-        if(trySuccess) { await setUserInfo(); };
+            trySuccess = false;
+        }
+        if(trySuccess) {
+            await setDisplayName(userName);
+        }
     }
     const googleAccount = async() => {
         let provider;

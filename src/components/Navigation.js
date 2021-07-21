@@ -83,23 +83,3 @@ const Navigation = () => {
 }
 
 export default Navigation;
-
-// {/* <li className="profile">
-// <div className="profile-details">
-//   <i className='bx bx-award'></i>
-//   <div className="name_job">
-//     <div className="name">Kwak Jaewon</div>
-//     <div className="job">Web designer</div>
-//   </div>
-// </div>
-// <i className='bx bx-log-out' id="log_out" ></i>
-// </li> */}
-
-// {/* <nav>
-// <ul>
-//   <li> <Link to="/profile">profile</Link> </li>
-//   <li> <Link to="/pchat">personal chat</Link> </li>
-//   <li> <Link to="/tchat">team chat</Link> </li>
-//   <li> <Link to="/setting">setting</Link> </li>
-// </ul>
-// </nav> */}

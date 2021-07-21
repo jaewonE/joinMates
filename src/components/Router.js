@@ -7,46 +7,57 @@ import Pchat from 'router/Pchat';
 import Profile from 'router/Profile';
 import Tchat from 'router/Tchat';
 import Setting from 'router/Setting';
+import Lab from 'router/Lab';
 
 function AppRouter() {
     const [setting, setSetting] = useState(false);
     const [userObj, setUserObj] = useState(null);
-    useEffect(() => {
-        authService.onAuthStateChanged((user) => {
-
-            if (user) {
-                let displayName = user.displayName;
-                if(displayName === null || displayName === undefined) {
-                displayName = "set_your_name";
-                };
-                setUserObj({
-                    displayName,
-                    uid: user.uid,
-                    updateProfile: (args) => user.updateProfile(args),
-                });
-            } else {
-                setUserObj(null);
-            }
-            setSetting(true);
-        });
-      }, []);
+    const [inputName, setDisplayName] = useState("set_your_name");
     const refreshUser = (ref) => {
         if(ref) {
-            console.log("refreshUser Null");
             setUserObj(null);
         } else {
             const user = authService.currentUser;
-            console.log("refreshUser");
-            console.log("displayName: "+ user.displayName);
             setUserObj({
+                ...userObj,
                 displayName: user.displayName,
-                uid: user.uid,
-                updateProfile: (args) => user.updateProfile(args)
-                .then(()=> console.log("update profile success"))
-                .catch((e)=> console.log(e)),
             });
         }
       };
+    useEffect(() => {
+        const setUserInfo = (inputName) => {
+            authService.onAuthStateChanged((user) => {
+                if (user) {
+                    let displayName = user.displayName;
+                    if(inputName === "") {
+                        displayName = "set_your_name";
+                    } else {
+                        displayName = inputName;
+                    }
+                    let profile_img = user.photoURL;
+                    if(profile_img === null || profile_img === undefined) {
+                        profile_img = "";
+                    }
+                    setUserObj({
+                        email: user.email,
+                        displayName,
+                        uid: user.uid,
+                        profile_img,
+                        updateProfile: (args) => user.updateProfile(args)
+                    });
+                } else {
+                    setUserObj(null);
+                }
+                setSetting(true);
+            });
+        };
+        const setUserList = () => {
+            console.log("setUserList");
+            console.log(userObj);
+        }
+        setUserInfo(inputName);
+        setUserList(userObj);
+    }, [userObj]);
     return(
         <Router>
             {setting ? (
@@ -74,6 +85,9 @@ function AppRouter() {
                                                 <Route exact path="/setting">
                                                     <Setting refreshUser={refreshUser} userObj={userObj} />
                                                 </Route>
+                                                <Route exact path="/lab">
+                                                    <Lab userObj={userObj}/>
+                                                </Route>
                                             </div>
                                     </React.Fragment>
                                 ):(
@@ -85,7 +99,7 @@ function AppRouter() {
                                             <Redirect to="/auth" />
                                         </Route>
                                         <Route exact path="/auth">
-                                            <Auth setUserObj={setUserObj}/>
+                                            <Auth setDisplayName={setDisplayName}/>
                                         </Route>
                                     </React.Fragment>
                                 )

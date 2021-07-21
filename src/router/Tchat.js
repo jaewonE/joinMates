@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import CreateTchatRoom from 'router/CreateTchatRoom';
 import 'router/css/Tchat.css';
 import test_img from 'router/css/test_img.jpg';
 
 const Tchat = () => {
+    const [creatingChatroom, setCreatingChatroom] = useState(false);
     return (
         <React.Fragment>
             <div className="chatList-wrapper">
@@ -12,33 +14,39 @@ const Tchat = () => {
                     </div>
                     <div className="chatList__header-title">Team Messages</div>
                     <div className="chatList__header-addChat">
-                        <i className='bx bx-add-to-queue'></i>
+                        <i onClick={()=>setCreatingChatroom(prev=>!prev)} className='bx bx-add-to-queue'></i>
                     </div>
                 </div>
-                <div className="chatList__search">
-                    <input placeholder="Search"/>
-                    <i className='bx bx-search' ></i>
-                </div>
-                <div className="chatList__search-margin"> </div>
-                <ul className="chatList__chatWith">
-                    <li className="chatWith">
-                        <div className="chatWith-img-div">
-                            <img className="profile_img" src={test_img} alt="profile_img"/>
+                {creatingChatroom ? (
+                    <CreateTchatRoom />
+                ):(
+                    <React.Fragment>
+                        <div className="chatList__search">
+                            <input placeholder="Search"/>
+                            <i className='bx bx-search' ></i>
                         </div>
-                        <div className="chatWith-info">
-                            <div className="chatWith-info__teamName">The A Squad</div>
-                            <div className="chatWith-info__lastChat">
-                                <span className="lastChat-message">Where are you?</span>
-                                <span className="lastChat-time">‧ 14m</span>
-                            </div>
-                        </div>
-                        <div className="chatWith-state">
-                            <span className="chatWith-state__span">3
-                                <div className="chatWith-state__bg"> </div>
-                            </span>
-                        </div>
-                    </li>
-                </ul>
+                        <div className="chatList__search-margin"> </div>
+                        <ul className="chatList__chatWith">
+                            <li className="chatWith">
+                                <div className="chatWith-img-div">
+                                    <img className="profile_img" src={test_img} alt="profile_img"/>
+                                </div>
+                                <div className="chatWith-info">
+                                    <div className="chatWith-info__teamName">The A Squad</div>
+                                    <div className="chatWith-info__lastChat">
+                                        <span className="lastChat-message">Where are you?</span>
+                                        <span className="lastChat-time">‧ 14m</span>
+                                    </div>
+                                </div>
+                                <div className="chatWith-state">
+                                    <span className="chatWith-state__span">3
+                                        <div className="chatWith-state__bg"> </div>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>  
+                    </React.Fragment>            
+                )}
             </div>
             <div className="chat-wrapper">
                 <div className="chat__header">
