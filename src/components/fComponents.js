@@ -208,6 +208,17 @@ const getChatList = ({path, limit=10, func}) => {
     return bringChatList;
 }
 
+const onAuthStateChanged = ({setInit, setIsLoggedIn}) => {
+    authService.onAuthStateChanged((user) => {
+        if (user) {
+        setIsLoggedIn(true);
+        } else {
+        setIsLoggedIn(false);
+        }
+        setInit(true);
+    });
+}
+
 export {authWithEmailAndPassword, 
     socialAccount, 
     createProject, 
@@ -217,7 +228,8 @@ export {authWithEmailAndPassword,
     updateChat,
     deleteChat,
     getUserObject,
-    getChatList
+    getChatList,
+    onAuthStateChanged
 };
 
 //나중에 useState를 이용하여 사용자가 이동하는 경로를 추적하는 오브젝트를 하나 생성해서 해당 오브젝트를 인자로 넘기자 지금 인자가 너무 많다.

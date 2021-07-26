@@ -1,0 +1,17 @@
+.project-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
+.area1 {
+    width: 278px;
+    height: 100vh;
+    background-color: red;
+}
+
+.area2 {
+    width: calc(100vw - 278px);
+    height: 100vh;
+    background-color: green;
+}
