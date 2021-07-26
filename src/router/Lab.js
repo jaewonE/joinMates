@@ -1,32 +1,134 @@
-import React, { useEffect, useState } from 'react';
-import { fireStore } from 'fbase';
+import React, { useRef, useEffect, useState } from 'react';
+import {getChatList, getUserObject, createChat, createCommit} from 'components/fComponents';
 
-const Lab = ({userObj}) => {
-    const [currentProjectId, setCurrentProjectId] = useState("");
-    const [currentChatroomName, setCurrentChatroomName] = useState("");
+//1. 로드를 모두 완료하였을 경우 스크롤이 가장 상단에 도착해도 새로고침 되지 않도록 한다.
+//2. 
 
-    //find user infomation in user_list by user id
-    const findUserInfo = async(user_id) => {
-        const user_list = await fireStore.collection("user_list").get();
+const Lab = () => {
+    const [userObj, setUserobj] = useState("");
+    const [chatList, setChatList] = useState([]);
+    const [inputValue, setInputValue] = useState("");
+    const [commitValue, setCommitValue] = useState("");
+    const [isChatReset, setIsChatReset] = useState(false);
+    const didMountRef = useRef(false);
+    const bringChatMount = useRef(false);
+    var chatSettingObj = {
+            limit : 10,
+            times : 0,
+            stopFunc : null
+    };
+
+
+    const getUserObj = async() => {
+        const userObject = await getUserObject();
+        setUserobj(userObject);
+    };
+    const bringChat = () => {
+        if(bringChatMount.current) {
+            setIsChatReset(true);
+            chatSettingObj.stopFunc();
+            console.log("2. clear event");
+        } else {
+            bringChatMount.current = true;
+        }
+
+        const bringChatList = getChatList({
+            path: ['ae2d8088-e527-41da-9588-bcde4188b5be','chatroom1'],
+            limit : chatSettingObj.limit*(chatSettingObj.times+1),
+            func : setChatList
+        });
+        chatSettingObj = {
+            limit : chatSettingObj.limit,
+            times : chatSettingObj.times + 1,
+            stopFunc : bringChatList
+        };
     }
+    const onChange = (e) => {
+        const {target: {value}} = e;
+        setInputValue(value);
+    }
+    const onSubmit = (e) => {
+        e.preventDefault();
+        createChat({
+            path: ['ae2d8088-e527-41da-9588-bcde4188b5be','chatroom1'],
+            createrId : userObj.userId,
+            chat: inputValue
+        });
+    }
+    const onChangeCommit = (e) => {
+        const {target: {value}} = e;
+        setCommitValue(value);
+    }
+    const onSubmitCommit = (e) => {
+        e.preventDefault();
+        createCommit({
+            path: ['ae2d8088-e527-41da-9588-bcde4188b5be','chatroom1'],
+            createrId : userObj.userId,
+            commit : commitValue,
+            commitToId : '1627214543690' //text2
+        });
+    }
+    const settingScroll = () => {
 
-
-  
-
-
-    const func = async() => {
-        const result = (await fireStore.collection("project").doc('random_id').collection('a1').doc('doc1').get());
-        console.log(result.data());
-        console.log("---------");
-        const result2 = (await fireStore.collection('nweets/random_id/a1').doc('doc1').get());
-        console.log(result2.data());
+        if(isChatReset) {
+            setIsChatReset(false);
+        } else {
+            const wrapper = document.querySelector('.wrapper');
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+    }
+    const handleScrollEvent = (type) => {
+        const wrapper = document.querySelector('.wrapper');
+        if(type === "add") {
+            wrapper.addEventListener('scroll', (e) => {
+                if(e.target.scrollTop === 0) {
+                    console.log("1. at the top");
+                    bringChat();
+                }
+            });
+        } else if(type === "remove") {
+            wrapper.removeEventListener('scroll', (e) => {
+                if(e.target.scrollTop === 0) {
+                    console.log("1. at the top");
+                    bringChat();
+                }
+            });
+        }
     }
     useEffect(()=> {
-        console.log("user object");
-        console.log(userObj);
-    },[]);
+        if (didMountRef.current) { 
+            settingScroll(); //component가 mount되고 난 다음에 scroll을 설정해주어야 한다.
+        } else {
+            getUserObj();
+            bringChat();
+            handleScrollEvent("add");
+            didMountRef.current = true;
+        }
+        return () => {
+            handleScrollEvent("remove");
+        }
+    },[chatList]);
     return (
-        <h1>Lab</h1>
+        <div className="lab">
+            <form onSubmit={onSubmit}>
+                <h1>chat</h1>
+                <input type="text" name="chatBox" placeholder="enter text" onChange={onChange}/>
+                <input type="submit" value="Click"/>
+            </form>
+            <form onSubmit={onSubmitCommit}>
+                <h1>commit</h1>
+                <input type="text" name = "commitBox" placeholder="enter text" onChange={onChangeCommit}/>
+                <input type="submit" value="Click"/>
+            </form>
+            <div className="wrapper">
+                {chatList.map(chat => (
+                    <h3 key={chat.createTime}>{chat.isCommit ? "commit :" : "chat :"} 
+                    {chat.doc && chat.doc} 
+                     : {chat.isCommit && chat.commitToObj.doc}
+                    </h3>
+                ))}
+            </div>
+        </div>
     )
 }
 
