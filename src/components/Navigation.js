@@ -8,7 +8,7 @@ const useSlideEvent = (nowPage) => {
   const didMountRef = useRef(false);
   
   const changeBtnShape = (navOpen) => {
-    let closeBtn = document.querySelector("#btn");
+    let closeBtn = document.querySelector("#header-btn");
     if(navOpen) {
       closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
     }else {
@@ -18,11 +18,11 @@ const useSlideEvent = (nowPage) => {
   useEffect(()=> {
     let currentPath = window.location.hash;
     if (didMountRef.current) {
-      document.querySelector(".sidebar").classList.toggle("open");
-      if(currentPath === '#/tchat') {
-        document.querySelector(".chatList-wrapper").classList.toggle("open");
-        document.querySelector(".chatList__search-margin").classList.toggle("open");
-      }
+      document.querySelector(".sideBar").classList.toggle("open");
+      // if(currentPath === '#/tchat') {
+      //   document.querySelector(".chatList-wrapper").classList.toggle("open");
+      //   document.querySelector(".chatList__search-margin").classList.toggle("open");
+      // }
       changeBtnShape(navOpen);
 
     } else didMountRef.current = true;
@@ -32,47 +32,55 @@ const useSlideEvent = (nowPage) => {
 
 const Navigation = ({projectList}) => {
   const {setNavOpen} = useSlideEvent();
+  const createProject = () => {
+    console.log("create project");
+  }
   return (
     <React.Fragment>
       <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet' />
-      <div className="sidebar">
-        <div className="logo-details">
+      <div className="sideBar">
+        <div className="header">
           <i className='bx bx-coffee'></i>
-          <div className="logo_name">JoinMates</div>
-          <i onClick={()=>setNavOpen(prev=>!prev)} className='bx bx-menu' id="btn" ></i>
+          <i onClick={()=>setNavOpen(prev=>!prev)} className='bx bx-menu' id="header-btn" ></i>
+          <div className="header-name">JoinMates</div>
         </div>
-        <ul className="nav-list">
-          <li>
-            <i onClick={()=>setNavOpen(prev=>!prev)} id='search-icon' className='bx bx-search' ></i>
-            <input type="text" placeholder="Fast Search" />
-          </li>
-          <li>
-          {projectList.map(project => (
-            <Link className="a-link projects" key={uuidv4()} to={{
-              pathname: "/project",
-              hash: `#${project}`,
-              state: { fromDashboard: true }
-              }}>
-              <i class='bx bxs-component'></i>
-              <span className="links_name">{project}</span>
+        <ul className="projectList">
+          <li className="nav-list">
+            <Link className="a-link" onClick={createProject} to={{
+                pathname: "/project/new",
+                state: { fromDashboard: true }
+            }}>
+              <i class='bx bx-layer-plus'></i>
+              <span className="links-name" id="create-project-btn">Create Project</span>
             </Link>
-          ))}
           </li>
-          <li className="nav-list__bottom-fixed">
+          {projectList.map(project => (
+            <li className="nav-list">
+              <Link className="a-link" key={uuidv4()} to={{
+                pathname: "/project",
+                hash: `#${project}`,
+                state: { fromDashboard: true }
+              }}>
+                <i className='bx bxs-component'></i>
+                <span className="links-name">{project}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ul className="footer">
+          <li className="nav-list">
             <Link className="a-link" to="/profile">
               <i className='bx bx-user' ></i>
-              <span className="links_name">Profile</span>
+              <span className="links-name">Profile</span>
             </Link>
           </li>
-          <li className="nav-list__bottom-fixed">
+          <li className="nav-list">
             <Link className="a-link" to="/setting">
               <i className='bx bx-cog' ></i>
-              <span className="links_name">Setting</span>
+              <span className="links-name">Setting</span>
             </Link>
           </li> 
         </ul>
-      </div>
-      <div className="home-section">
       </div>
       <script
         src="https://kit.fontawesome.com/6478f529f2.js"
@@ -83,30 +91,4 @@ const Navigation = ({projectList}) => {
 }
 
 export default Navigation;
-
-
-{/* <li>
-<Link className="a-link" to="/profile">
-  <i className='bx bx-user' ></i>
-  <span className="links_name">Profile</span>
-</Link>
-</li>
-<li>
-<Link className="a-link" to="/pchat">
-  <i className='bx bxs-message-rounded'></i>
-  <span className="links_name">Personal Messages</span>
-</Link>
-</li>
-<li>
-<Link className="a-link" to="/tchat">
-  <i className='bx bx-chat' ></i>
-  <span className="links_name">Team Messages</span>
-</Link>
-</li>
-<li>
-<Link className="a-link" to="/setting">
-  <i className='bx bx-cog' ></i>
-  <span className="links_name">Setting</span>
-</Link>
-</li> */}
 

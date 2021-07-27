@@ -6,6 +6,7 @@ import Navigation from 'components/Navigation';
 import Profile from 'router/Profile';
 import Setting from 'router/Setting';
 import Project from 'router/Project';
+import CreateNewProject from 'router/CreateNewProject';
 
 function AppRouter() {
     const [init, setInit] = useState(false);
@@ -48,6 +49,9 @@ function AppRouter() {
                                     <Route exact path="/project">
                                         <Project currentProject={currentProject}/>
                                     </Route>
+                                    <Route exact path="/project/new">
+                                        <CreateNewProject />
+                                    </Route>
                                     <Route exact path="/setting">
                                         <Setting />
                                     </Route>
@@ -56,9 +60,11 @@ function AppRouter() {
                                     </Route>
                                 </React.Fragment>
                             ):(
-                                <Route exact path="/">
-                                    <Auth />
-                                </Route>
+                                <div id="auth-container">
+                                    <Route exact path="/">
+                                        <Auth />
+                                    </Route>
+                                </div>
                             )}
                         </React.Fragment>
                     </Switch>
