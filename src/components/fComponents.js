@@ -1,4 +1,4 @@
-import { authService ,firebaseInstance, fireStore } from "fbase";
+import { authService ,firebaseInstance, fireStore, storage } from "fbase";
 import { v4 as uuidv4 } from "uuid";
 
 //login or signup with email and password
@@ -6,13 +6,14 @@ const authWithEmailAndPassword = async({newAccount, email, password, userName=""
     try {
         let data;
         if (newAccount) {
-          data = await authService.createUserWithEmailAndPassword(email, password);
+            data = await authService.createUserWithEmailAndPassword(email, password);
+            const {userObj} = await ifNewbieConstructUserData(data, userName);
+            await createUserObj(userObj);
+            return {data : userObj, error: null};   
         } else {
             data = await authService.signInWithEmailAndPassword(email, password);
+            return {data : null, error: null};   
         }
-        const {userObj} = await ifNewbieConstructUserData(data, userName);
-        if(newAccount) await createUserObj(userObj);
-        return {data : userObj, error: null};   
     } catch (error) {
         return {data : null, error: error.message};
     }
@@ -39,17 +40,9 @@ const socialAccount = async(name) => {
 
 //create user infomation object from auth data
 const ifNewbieConstructUserData = async(data, name="set_your_name") => {
+    const defaultProfileImg = 'https://firebasestorage.googleapis.com/v0/b/joinmates-7701.appspot.com/o/defaultProfileImg?alt=media&token=310ed0a4-3b48-41d3-9148-acfe6b028d00';
     let userName = Boolean(data.user.displayName) ? data.user.displayName : name;
-    let photoURL = Boolean(data.user.photoURL) ? data.user.photoURL : "";
-    // let photoURL = ""
-    // if(data.user.photoURL) {
-    //     const fileRef = storage.ref().child(`${data.user.uid}/${uuidv4()}}`);
-    //     const response = await fileRef.putString(data.user.photoURL, String);
-    //     const responseURL = await response.ref.getDownloadURL();
-    //     console.log(data.user.photoURL);
-    //     console.log(responseURL);
-    //     photoURL = responseURL;
-    // };
+    let photoURL = Boolean(data.user.photoURL) ? data.user.photoURL : defaultProfileImg;
     let isNewAccount = data.additionalUserInfo.isNewUser;
     if(isNewAccount) {
         const userObj = {
@@ -155,6 +148,20 @@ const createCommit = async({path=null, createrId, type="text", commit="", commit
     } //else if(chatType === img)
 }
 
+const uploadImg = async(userObj, imageURL) => {
+    const fileRef = storage.ref().child(`${userObj.userId}/${uuidv4()}}`);
+    const response = await fileRef.putString(imageURL, "data_url");
+    const responseURL = await response.ref.getDownloadURL();
+    return responseURL;
+}
+
+const uploadProfileImg = async(userObj, imageURL) => {
+    const fileRef = storage.ref().child(`profileImg/${userObj.userId}`);
+    const response = await fileRef.putString(imageURL, "data_url");
+    const responseURL = await response.ref.getDownloadURL();
+    return responseURL;
+}
+
 const updateChat = async({path = null, type='text', currentUserId, updateContents=""}) => {
     if(!path) console.error("updateChat Error : no path propoerty");
     let targetChat;
@@ -219,6 +226,111 @@ const onAuthStateChanged = ({setInit, setIsLoggedIn}) => {
     });
 }
 
+const signOut = async() => {
+    await authService.signOut();
+}
+
+const getUserComfirm = async(currentPassword) => {
+    let password;
+    if(currentPassword) {
+        password = currentPassword;
+    } else {
+        password = window.prompt("비밀번호를 입력해주세요");
+    }
+    if(password) {
+        try {
+            const user = authService.currentUser;
+            const credential = firebaseInstance.auth.EmailAuthProvider.credential(
+                user.email, 
+                password
+            );
+            return {user, credential, error:null};
+        } catch(error) {
+            return {user: null, credential: null, error:"wrong password"};
+        }
+    } else {
+        return {user: null, credential: null, error:"confirm fail: user cancel the confirm alert"};
+    }
+}
+
+const deleteAccount = async() => {
+    const {user, credential, error} = await getUserComfirm();
+    if(error) {
+        alert(error);
+        return;
+    }
+    await user.reauthenticateWithCredential(credential).then(async() => {
+        await fireStore.collection('userList').doc(user.uid).delete();
+        await authService.currentUser.delete().catch(error => {
+            alert(error.message);
+        });
+    }).catch((error) => {
+        alert(error.message);
+    });
+}
+
+const updatePassword = async(currentPassword, newPassword) => {
+    const {user, credential, error} = await getUserComfirm(currentPassword);
+    if(error) {
+        alert(error);
+    }
+    await user.reauthenticateWithCredential(credential).then(async() => {
+        const result = user.updatePassword(newPassword);
+        result.then(function() {
+            alert("Sucessfully change password");
+        }, function(error) {
+            alert(error.message);
+        });
+    }).catch((error) => {
+        alert(error.message);
+    });
+}
+
+const updateEmail = async(newEmail, currentPassword, ) => {
+    const {user, credential, error} = await getUserComfirm(currentPassword);
+    if(error) {
+        alert(error);
+    }
+    await user.reauthenticateWithCredential(credential).then(async() => {
+        const result = user.updateEmail(newEmail);
+        result.then(function() {
+            alert("Sucessfully change email");
+        }, function(error) {
+            alert(error.message);
+        });
+    }).catch((error) => {
+        alert(error.message);
+    });
+}
+
+const updateUserName = async(userName) => {
+    await authService.currentUser.updateProfile({displayName:userName}).then(
+        function() {
+            alert("Sucessfully change user name");
+        },
+        function(error) {
+            alert(error.message);
+        }
+    );
+}
+
+const updateUserProfileImg = async(userObj, profileImg) => {
+    const responseURL = await uploadProfileImg(userObj, profileImg);
+    await createUserObj({
+        ...userObj,
+        photoURL : responseURL
+    });
+    await authService.currentUser.updateProfile({photoURL:responseURL}).then(
+        function() {
+            alert("Sucessfully change profile image");
+        },
+        function(error) {
+            alert(error.message);
+        }
+    );
+    return responseURL;
+}
+
 export {authWithEmailAndPassword, 
     socialAccount, 
     createProject, 
@@ -229,7 +341,14 @@ export {authWithEmailAndPassword,
     deleteChat,
     getUserObject,
     getChatList,
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut,
+    deleteAccount,
+    updatePassword,
+    updateEmail,
+    updateUserName,
+    updateUserProfileImg,
+    uploadImg
 };
 
 //나중에 useState를 이용하여 사용자가 이동하는 경로를 추적하는 오브젝트를 하나 생성해서 해당 오브젝트를 인자로 넘기자 지금 인자가 너무 많다.

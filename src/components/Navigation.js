@@ -50,12 +50,12 @@ const Navigation = ({projectList}) => {
                 pathname: "/project/new",
                 state: { fromDashboard: true }
             }}>
-              <i class='bx bx-layer-plus'></i>
+              <i className='bx bx-layer-plus'></i>
               <span className="links-name" id="create-project-btn">Create Project</span>
             </Link>
           </li>
           {projectList.map(project => (
-            <li className="nav-list">
+            <li key={uuidv4()} className="nav-list">
               <Link className="a-link" key={uuidv4()} to={{
                 pathname: "/project",
                 hash: `#${project}`,

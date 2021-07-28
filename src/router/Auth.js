@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import googlelogo from 'router/css/Google_icon.png';
-import { authService, firebaseInstance } from 'fbase';
-import 'router/css/Auth.css';
+import {authWithEmailAndPassword, socialAccount} from 'components/fComponents';
 
 function useSetSlideUpEvent() {
     const [pageState, setPageState] = useState("signup");
@@ -26,12 +25,12 @@ function useSetSlideUpEvent() {
     return {isLoginPage, setPageState};
 }
 
-function Auth ({setDisplayName}) {
+function Auth () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [userName, setUserName] = useState("");
+    // const [errorMessage, setErrorMessage] = useState(null);
     const {isLoginPage, setPageState} = useSetSlideUpEvent();
-    let trySuccess = false;
     const transitFormSignup = () => {
         document.getElementById('login').classList.remove('opacity0');
     }
@@ -60,27 +59,17 @@ function Auth ({setDisplayName}) {
     }
     const onSubmit = async(e) => {
         e.preventDefault();
-        try {
-            if(isLoginPage) {
-                await authService.signInWithEmailAndPassword(email, password).catch((error) => alert(error.message));
-            }else {
-                await authService.createUserWithEmailAndPassword(email, password).catch((error) => alert(error.message));
-            }
-            trySuccess = true;
-        } catch (error) {
-            console.error(error);
-            alert("Error in Login\nPlease check your console");
-            trySuccess = false;
-        }
-        if(trySuccess) {
-            await setDisplayName(userName);
-        }
+        const {error} = await authWithEmailAndPassword({
+          newAccount : !isLoginPage,
+          email,
+          password,
+          userName
+        });
+        if(error) alert(error);
     }
     const googleAccount = async() => {
-        let provider;
-        provider = new firebaseInstance.auth.GoogleAuthProvider();
-        let data = firebaseInstance.auth().signInWithPopup(provider)
-        await data.catch((error) => alert(error.message));
+      const {error} = socialAccount("google");
+      if(error) alert(error);
     }
     return(
         <div className="form-structor">

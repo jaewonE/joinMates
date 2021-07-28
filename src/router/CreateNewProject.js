@@ -2,7 +2,9 @@ import React from 'react';
 
 const CreateNewProject = () => {
     return (
-        <h1>CreateNewProject</h1>
+        <div className="setting-container">
+        <h1>Create New Project</h1>
+      </div>
     )
 };
 

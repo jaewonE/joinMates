@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom"; //npm install react-router-dom
-import {onAuthStateChanged} from 'components/fComponents';
+import React, {useEffect, useState, useRef} from 'react';
+import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import {onAuthStateChanged, getUserObject} from 'components/fComponents';
 import Auth from 'router/Auth';
 import Navigation from 'components/Navigation';
 import Profile from 'router/Profile';
@@ -12,12 +12,13 @@ function AppRouter() {
     const [init, setInit] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentProject, setCurrentProject] = useState("");
+    const [userObj, setUserObj] = useState(null);
+    const didMountRef = useRef(false);
     const projectList = ['project1', 'project2', 'project3'];
     //임시로 projectList 사용. 나중에 userInfo에서 projectList 가져올 것
 
     const hashChangeListener = () => {
         const hash = document.location.hash;
-        console.log("hash: " + hash);
         const hashIndex = hash.indexOf('/project#');
         if(hashIndex === -1) {
             console.log("not project");
@@ -27,24 +28,38 @@ function AppRouter() {
         }
     }
 
+    const getAndSetUserObj = async() => {
+        const user = await getUserObject();
+        setUserObj(user);
+    }
+
     useEffect(() => {
-        onAuthStateChanged({setInit, setIsLoggedIn});
-        window.addEventListener('hashchange', hashChangeListener, false);
+        if(didMountRef.current) {
+            if(isLoggedIn) {
+                getAndSetUserObj();
+            }
+        } else {
+            onAuthStateChanged({setInit, setIsLoggedIn});
+            window.addEventListener('hashchange', hashChangeListener, false);
+            didMountRef.current = true;
+        }
         return () => {
             window.removeEventListener('hashchange', hashChangeListener, false);
-        }
-    }, []);
+        };
+    }, [isLoggedIn]);
     return (
         <React.Fragment>
             {init ? (
                 <Router>
-                    {isLoggedIn && <Navigation projectList={projectList}/>}
+                    {isLoggedIn && userObj && <Navigation projectList={projectList}/>}
                     <Switch>
                         <React.Fragment>
-                            {isLoggedIn ? (
+                        {isLoggedIn ? (
+                            <React.Fragment>
+                                {userObj && (
                                 <React.Fragment>
                                     <Route exact path='/'>
-                                        <Redirect to="/project" />
+                                        <Redirect to="/profile" />
                                     </Route>
                                     <Route exact path="/project">
                                         <Project currentProject={currentProject}/>
@@ -56,22 +71,28 @@ function AppRouter() {
                                         <Setting />
                                     </Route>
                                     <Route exact path="/profile">
-                                        <Profile setIsLoggedIn={setIsLoggedIn}/>
+                                        <Profile userObj={userObj} setUserObj={setUserObj}/>
                                     </Route>
                                 </React.Fragment>
-                            ):(
-                                <div id="auth-container">
-                                    <Route exact path="/">
-                                        <Auth />
-                                    </Route>
-                                </div>
-                            )}
+                                )}
+                            </React.Fragment>
+                        ):(
+                            <div id="auth-container">
+                                <Route path="/">
+                                    <Auth />
+                                </Route>
+                            </div>
+                        )}
                         </React.Fragment>
                     </Switch>
                 </Router>
             ):(
-                <div>
-                    "Initializing..."
+                <div className="initializing-div">
+                    <img
+                    src='https://i.ytimg.com/vi/zwzPeHNp9Ms/maxresdefault.jpg'
+                    alt="Initializing_Image"
+                    id="initializing-img"
+                    />
                     <footer>&copy; {new Date().getFullYear()}JoinMates</footer>
               </div>
             )}

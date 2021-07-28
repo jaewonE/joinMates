@@ -116,7 +116,7 @@
 
     opacity: 0;
     position: absolute;
-    top: 4.5px;
+    top: 5px;
     left: 53px;
     pointer-events: none; 
     line-height: 30px;
@@ -128,6 +128,13 @@
 }
 #create-project-btn {
     top: 10px;
+    left: 50px;
+}
+.sideBar.open .a-link:hover .links-name {
+    top: 5px;
+    left: 53px;
+}
+.sideBar.open .a-link:hover #create-project-btn {
     left: 50px;
 }
 .a-link:hover .links-name {
