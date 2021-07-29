@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { signOut, deleteAccount, updatePassword, updateEmail, updateUserName, updateUserProfileImg } from 'components/fComponents';
 
 const Profile = ({userObj, setUserObj}) => {
@@ -51,20 +51,23 @@ const Profile = ({userObj, setUserObj}) => {
             deleteAccount();
         };
     }
-    const changeProfileImg = useCallback(async(e) => {
-        console.log("OnFileChange!");
+    const changeProfileImg = async(e) => {
         const file = e.target.files[0];
         if(file) {
             const reader =new FileReader();
             reader.onloadend = async(evt) => {
                 const imgURL = await evt.currentTarget.result;
                 const imageURL = await updateUserProfileImg(userObj, imgURL);
+                setUserObj({
+                    ...userObj,
+                    photoURL: imageURL
+                })
                 setProfileImg(imageURL);
             };
             reader.readAsDataURL(file);
             e.target.value = "";
         }
-    },[userObj]);
+    };
     const editPassword = () => {
         setIdEditPassword(prev => !prev);
         setOldPassword("");
@@ -84,18 +87,19 @@ const Profile = ({userObj, setUserObj}) => {
         }
     }
     const changeUserEmail = async() => {
-        await updateEmail(userObj, email);
+        await updateEmail(email);
+        setUserObj({
+            ...userObj,
+            email
+        })
     }
     const changeUserName = async() => {
-        await updateUserName(userObj, userName);
+        await updateUserName(userName);
+        setUserObj({
+            ...userObj,
+            userName
+        })
     }
-    useEffect(()=> {
-        const fileUploader = document.querySelector('#uploadImg');
-        fileUploader.addEventListener('change', changeProfileImg);
-        return () => {
-            fileUploader.removeEventListener('change', changeProfileImg);
-        }
-    },[changeProfileImg])
     return (
         <div className="profile-container">
             <div className="profile-wrapper">
@@ -103,7 +107,7 @@ const Profile = ({userObj, setUserObj}) => {
                     <div className="profileImg-wrapper">
                         <img src={profileImg} alt="Profile_img"/>
                         <label htmlFor="uploadImg">Change Profile Image</label>
-                        <input type='file' id="uploadImg" accept="image/*" onClick={changeProfileImg}/>
+                        <input type='file' id="uploadImg" accept="image/*" onChange={changeProfileImg}/>
                     </div>
                     <React.Fragment>
                         {isEditPassword? (

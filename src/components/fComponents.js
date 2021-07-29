@@ -70,7 +70,6 @@ const createUserObj = async(userObj) => {
 //create project and add project id in fireStore_userList_projectList
 const createProject = async({createrId, projectName="project_name", projectImg=""}) => {
     const createrInfo = (await fireStore.doc(`userList/${createrId}`).get()).data();
-    // const createrInfo = (await fireStore.collection('userList').doc(createrId).get()).data();
     const projectId = uuidv4();
     const projectObj = {
         projectInfo : {
@@ -291,8 +290,7 @@ const updatePassword = async(currentPassword, newPassword) => {
     });
 }
 
-const updateEmail = async(userObj, newEmail, currentPassword) => {
-    //update user email in firebase
+const updateEmail = async(newEmail, currentPassword) => {
     const {user, credential, error} = await getUserComfirm(currentPassword);
     if(error) {
         alert(error);
@@ -300,11 +298,6 @@ const updateEmail = async(userObj, newEmail, currentPassword) => {
     await user.reauthenticateWithCredential(credential).then(async() => {
         const result = user.updateEmail(newEmail);
         result.then(async()=> {
-            //update user email in userObj
-            await fireStore.collection('userList').doc(userObj.userId).update({
-                ...userObj,
-                email: newEmail
-            });
             alert("Sucessfully change email");
         }, function(error) {
             alert(error.message);
@@ -314,15 +307,9 @@ const updateEmail = async(userObj, newEmail, currentPassword) => {
     });
 }
 
-const updateUserName = async(userObj, userName) => {
-    //update userDisplayName in firebase
+const updateUserName = async(userName) => {
     await authService.currentUser.updateProfile({displayName:userName}).then(
         async()=> {
-            //update username in userObj
-            await fireStore.collection('userList').doc(userObj.userId).update({
-                ...userObj,
-                userName
-            });
             alert("Sucessfully change user name");
         },
         function(error) {
@@ -332,19 +319,9 @@ const updateUserName = async(userObj, userName) => {
 }
 
 const updateUserProfileImg = async(userObj, profileImg) => {
-    //update user photoURL in firebase
     const responseURL = await uploadProfileImg(userObj, profileImg);
-    await createUserObj({
-        ...userObj,
-        photoURL : responseURL
-    });
     await authService.currentUser.updateProfile({photoURL:responseURL}).then(
         async()=> {
-            //update user profile image in userObj
-            await fireStore.collection('userList').doc(userObj.userId).update({
-                ...userObj,
-                photoURL: responseURL
-            });
             alert("Sucessfully change profile image");
         },
         function(error) {
@@ -352,6 +329,10 @@ const updateUserProfileImg = async(userObj, profileImg) => {
         }
     );
     return responseURL;
+}
+
+const updateUserObj = async(userObj) => {
+    await fireStore.collection('userList').doc(userObj.userId).update(userObj);
 }
 
 export {authWithEmailAndPassword, 
@@ -371,7 +352,8 @@ export {authWithEmailAndPassword,
     updateEmail,
     updateUserName,
     updateUserProfileImg,
-    uploadImg
+    uploadImg,
+    updateUserObj
 };
 
 //나중에 useState를 이용하여 사용자가 이동하는 경로를 추적하는 오브젝트를 하나 생성해서 해당 오브젝트를 인자로 넘기자 지금 인자가 너무 많다.

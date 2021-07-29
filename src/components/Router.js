@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import {onAuthStateChanged, getUserObject} from 'components/fComponents';
+import {onAuthStateChanged, getUserObject, updateUserObj} from 'components/fComponents';
 import Auth from 'router/Auth';
 import Navigation from 'components/Navigation';
 import Profile from 'router/Profile';
@@ -8,11 +8,25 @@ import Setting from 'router/Setting';
 import Project from 'router/Project';
 import CreateNewProject from 'router/CreateNewProject';
 
+function useUserObjChangedListener() {
+    const [userObj, setUserObj] = useState(null);
+    const mountRef = useRef(false);
+    useEffect(()=> {
+        const uploadUserObj = async() => {
+            await updateUserObj(userObj);
+        }
+        if(mountRef.current) {
+            uploadUserObj();
+        } else mountRef.current = true;
+    },[userObj]);
+    return {userObj, setUserObj};
+}
+
 function AppRouter() {
     const [init, setInit] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentProject, setCurrentProject] = useState("");
-    const [userObj, setUserObj] = useState(null);
+    const {userObj, setUserObj} = useUserObjChangedListener();
     const didMountRef = useRef(false);
     const projectList = ['project1', 'project2', 'project3'];
     //임시로 projectList 사용. 나중에 userInfo에서 projectList 가져올 것
@@ -28,12 +42,12 @@ function AppRouter() {
         }
     }
 
-    const getAndSetUserObj = async() => {
-        const user = await getUserObject();
-        setUserObj(user);
-    }
-
+    
     useEffect(() => {
+        const getAndSetUserObj = async() => {
+            const user = await getUserObject();
+            setUserObj(user);
+        }
         if(didMountRef.current) {
             if(isLoggedIn) {
                 getAndSetUserObj();
@@ -46,7 +60,7 @@ function AppRouter() {
         return () => {
             window.removeEventListener('hashchange', hashChangeListener, false);
         };
-    }, [isLoggedIn]);
+    }, [isLoggedIn, setUserObj]);
     return (
         <React.Fragment>
             {init ? (
@@ -68,7 +82,7 @@ function AppRouter() {
                                         <CreateNewProject />
                                     </Route>
                                     <Route exact path="/setting">
-                                        <Setting />
+                                        <Setting userObj={userObj} setUserObj={setUserObj}/>
                                     </Route>
                                     <Route exact path="/profile">
                                         <Profile userObj={userObj} setUserObj={setUserObj}/>
