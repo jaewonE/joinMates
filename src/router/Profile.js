@@ -84,10 +84,10 @@ const Profile = ({userObj, setUserObj}) => {
         }
     }
     const changeUserEmail = async() => {
-        await updateEmail(email);
+        await updateEmail(userObj, email);
     }
     const changeUserName = async() => {
-        await updateUserName(userName);
+        await updateUserName(userObj, userName);
     }
     useEffect(()=> {
         const fileUploader = document.querySelector('#uploadImg');

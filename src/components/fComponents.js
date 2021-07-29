@@ -211,7 +211,7 @@ const getChatList = ({path, limit=10, func}) => {
         );
         func(Array.from(chatList));
     });
-    //나중에 본게임에 가서 함수 수정할 때 useState나 다른 방법 있으면 그걸로 하고 해서 onLoad를 표현하자. 
+    //나중에 본게임에 가서 함수 수정할 때 onLoad를 표현하자. 
     return bringChatList;
 }
 
@@ -254,6 +254,7 @@ const getUserComfirm = async(currentPassword) => {
 }
 
 const deleteAccount = async() => {
+    //delete user account in firebase
     const {user, credential, error} = await getUserComfirm();
     if(error) {
         alert(error);
@@ -261,12 +262,16 @@ const deleteAccount = async() => {
     }
     await user.reauthenticateWithCredential(credential).then(async() => {
         await fireStore.collection('userList').doc(user.uid).delete();
-        await authService.currentUser.delete().catch(error => {
+        await authService.currentUser.delete().then(async()=> {
+                //delete userObj
+                await fireStore.collection('userList').doc(user.uid).delete();
+        },()=> {
             alert(error.message);
         });
     }).catch((error) => {
         alert(error.message);
     });
+
 }
 
 const updatePassword = async(currentPassword, newPassword) => {
@@ -286,14 +291,20 @@ const updatePassword = async(currentPassword, newPassword) => {
     });
 }
 
-const updateEmail = async(newEmail, currentPassword, ) => {
+const updateEmail = async(userObj, newEmail, currentPassword) => {
+    //update user email in firebase
     const {user, credential, error} = await getUserComfirm(currentPassword);
     if(error) {
         alert(error);
     }
     await user.reauthenticateWithCredential(credential).then(async() => {
         const result = user.updateEmail(newEmail);
-        result.then(function() {
+        result.then(async()=> {
+            //update user email in userObj
+            await fireStore.collection('userList').doc(userObj.userId).update({
+                ...userObj,
+                email: newEmail
+            });
             alert("Sucessfully change email");
         }, function(error) {
             alert(error.message);
@@ -303,9 +314,15 @@ const updateEmail = async(newEmail, currentPassword, ) => {
     });
 }
 
-const updateUserName = async(userName) => {
+const updateUserName = async(userObj, userName) => {
+    //update userDisplayName in firebase
     await authService.currentUser.updateProfile({displayName:userName}).then(
-        function() {
+        async()=> {
+            //update username in userObj
+            await fireStore.collection('userList').doc(userObj.userId).update({
+                ...userObj,
+                userName
+            });
             alert("Sucessfully change user name");
         },
         function(error) {
@@ -315,13 +332,19 @@ const updateUserName = async(userName) => {
 }
 
 const updateUserProfileImg = async(userObj, profileImg) => {
+    //update user photoURL in firebase
     const responseURL = await uploadProfileImg(userObj, profileImg);
     await createUserObj({
         ...userObj,
         photoURL : responseURL
     });
     await authService.currentUser.updateProfile({photoURL:responseURL}).then(
-        function() {
+        async()=> {
+            //update user profile image in userObj
+            await fireStore.collection('userList').doc(userObj.userId).update({
+                ...userObj,
+                photoURL: responseURL
+            });
             alert("Sucessfully change profile image");
         },
         function(error) {
