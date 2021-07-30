@@ -7,3 +7,132 @@
     width: 100%;
     height: 100vh;
 }
+.createNewProject-card {
+    width: 330px;
+    height: 480px;
+    min-height: 480px;
+    background-color: white;
+    padding: 15px 25px;
+    position: relative;
+
+}
+
+.createNewProject-card .card-submit {
+    position: relative;
+    opacity: 1;
+    pointer-events: all;
+    border: 0px;
+    height: 20px;
+    width: 100px;
+}
+/* .title-wrapper .card-submit,
+.friends-wrapper .card-submit{
+    top: 370px; input의 height 만큼 감소해야 함
+    right: 12.5px; input의 width의 절반만큼 증가해야 함
+} */
+.title-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.title-wrapper .title-warn {
+    position: absolute;
+    top: 262px;
+    left: 27px;
+    font-size: 14px;
+    color: rgba(238, 67, 67, 0.8);
+
+}
+.title-wrapper .title-input {
+    width: 280px;
+    height: 50px;
+    border: none;
+    border-bottom: 2px solid rgba(0,0,0,0.2);
+    padding: 0px 5px;
+    text-align: center;
+
+    font-size: 28px;
+    position: relative;
+    bottom: 10px;
+    caret-color: transparent;
+    overflow: auto;
+    transition: all 1s ease;    
+}
+.title-wrapper .title-input::placeholder {
+    color: rgba(0,0,0,0.4);
+}
+.title-wrapper .title-input:focus + .card-submit__label {
+    opacity: 1;
+    transition: all 1s ease;
+}
+.card-submit__label {
+    position: absolute;
+    top: 265px;
+    right: 45%;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    transition: all 1s ease;
+}
+.card-submit__label i {
+    font-size: 24px;
+    font-weight: 300;
+    color: rgba(0,0,0,0.4);
+}
+#title__submit-btn {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+}
+
+
+.projectImg-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+.projectImg-wrapper img {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    position: relative;
+    top: 90px;
+}
+.projectImg-wrapper label {
+    position: relative;
+    bottom: 80px;
+    width: 230px;
+    height: 40px;
+    background-color: rgb(204, 146, 204);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.projectImg-wrapper #newProjectImg {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    pointer-events: none;
+    opacity: 0;
+}
+#projectImg-btn {
+    position: absolute;
+    bottom: 55px;
+    width: 230px;
+    height: 30px;
+    background-color: rgb(246, 207, 134);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+}
+

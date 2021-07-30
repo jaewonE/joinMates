@@ -67,10 +67,23 @@ const createUserObj = async(userObj) => {
     await fireStore.collection('userList').doc(userObj.userId).set(userObj);
 }
 
+//get public url of uploaded project image.
+const uploadProjectImg = async(projectId, imageURL) => {
+    const fileRef = storage.ref().child(`projectImg/${projectId}`);
+    const response = await fileRef.putString(imageURL, "data_url");
+    const responseURL = await response.ref.getDownloadURL();
+    return responseURL;
+}
+
 //create project and add project id in fireStore_userList_projectList
-const createProject = async({createrId, projectName="project_name", projectImg=""}) => {
-    const createrInfo = (await fireStore.doc(`userList/${createrId}`).get()).data();
+const createProject = async(userObj, projectName="project_name", projectImgDataURL="") => {
     const projectId = uuidv4();
+    let projectImg;
+    if(projectImgDataURL) {
+        projectImg = await uploadProjectImg(projectId, projectImgDataURL);
+    } else {
+        projectImg = 'https://firebasestorage.googleapis.com/v0/b/joinmates-7701.appspot.com/o/defaultProjectImg.jpg?alt=media&token=f93b15f0-bd72-4b93-b031-9a5d4631cae9';
+    }
     const projectObj = {
         projectInfo : {
             projectName,
@@ -79,21 +92,13 @@ const createProject = async({createrId, projectName="project_name", projectImg="
         },
         chatList : [],
         useInfo : [{
-            userId : createrInfo.userId,
-            userName : createrInfo.userName,
-            photoURL : createrInfo.photoURL
+            userId : userObj.userId,
+            userName : userObj.userName,
+            photoURL : userObj.photoURL
         }]
     };
-    const originProjectList = createrInfo.projectList;
-    const projectList = [
-        ...originProjectList,
-        projectObj.projectInfo
-    ];
     await fireStore.collection('project').doc(projectId).set(projectObj);
-    await fireStore.collection('userList').doc(createrId).update({
-        ...createrInfo,
-        projectList
-    });
+    return projectObj.projectInfo;
 }
 
 //chatroomName을 활용해야 한다. 아직 구현 X

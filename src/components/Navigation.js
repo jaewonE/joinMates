@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import 'components/css/Navigation.css';
 import { v4 as uuidv4 } from "uuid";  //키값을 위해 임시로 가져옴. 나중에 userInfo에서 ProjectList를 가져오면 projectKey값으로 할 것.
 
-const useSlideEvent = (nowPage) => {
+const useSlideEvent = () => {
   const [navOpen, setNavOpen] = useState(false);
   const didMountRef = useRef(false);
   
@@ -16,7 +16,7 @@ const useSlideEvent = (nowPage) => {
     }
   };
   useEffect(()=> {
-    let currentPath = window.location.hash;
+    // let currentPath = window.location.hash;
     if (didMountRef.current) {
       document.querySelector(".sideBar").classList.toggle("open");
       // if(currentPath === '#/tchat') {
@@ -30,11 +30,8 @@ const useSlideEvent = (nowPage) => {
   return {setNavOpen};
 }
 
-const Navigation = ({projectList}) => {
+const Navigation = ({projectObjList}) => {
   const {setNavOpen} = useSlideEvent();
-  const createProject = () => {
-    console.log("create project");
-  }
   return (
     <React.Fragment>
       <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet' />
@@ -46,7 +43,7 @@ const Navigation = ({projectList}) => {
         </div>
         <ul className="projectList">
           <li className="nav-list">
-            <Link className="a-link" onClick={createProject} to={{
+            <Link className="a-link" to={{
                 pathname: "/project/new",
                 state: { fromDashboard: true }
             }}>
@@ -54,15 +51,15 @@ const Navigation = ({projectList}) => {
               <span className="links-name" id="create-project-btn">Create Project</span>
             </Link>
           </li>
-          {projectList.map(project => (
+          {projectObjList.map(projectObj => (
             <li key={uuidv4()} className="nav-list">
               <Link className="a-link" key={uuidv4()} to={{
                 pathname: "/project",
-                hash: `#${project}`,
+                hash: `#${projectObj.projectName}`,
                 state: { fromDashboard: true }
               }}>
                 <i className='bx bxs-component'></i>
-                <span className="links-name">{project}</span>
+                <span className="links-name">{projectObj.projectName}</span>
               </Link>
             </li>
           ))}

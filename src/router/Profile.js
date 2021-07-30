@@ -75,14 +75,11 @@ const Profile = ({userObj, setUserObj}) => {
         setConfirmNewPassword("");
     }
     const changePassword = async(e) => {
-        e.preventDefault()
-        const currentPassword = e.target[1].value;
-        const newPassword = e.target[2].value;
-        const comfirmNewPassword = e.target[3].value;
-        if(newPassword !== comfirmNewPassword) {
+        e.preventDefault();
+        if(newPassword !== confirmNewPassword) {
             alert('new password is not same with comfirm new password');
         } else {
-            await updatePassword(currentPassword, newPassword);
+            await updatePassword(oldPassword, newPassword);
             editPassword();
         }
     }

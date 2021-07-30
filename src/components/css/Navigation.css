@@ -140,6 +140,7 @@
 .a-link:hover .links-name {
     top: 7px;
     left: 73px;
+    z-index: 5;
 }
 .a-link:hover #create-project-btn {
     left: 70px;
