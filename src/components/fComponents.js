@@ -53,6 +53,9 @@ const ifNewbieConstructUserData = async(data, name="set_your_name") => {
             photoURL,
             friends : [],
             projectList : [],
+            setting: {
+                seeProjectWithIcon: false
+            },
             lastEditedProjectId : "",
             lastEditedChatroomName : ""
         }
@@ -91,11 +94,9 @@ const createProject = async(userObj, projectName="project_name", projectImgDataU
             projectImg,
         },
         chatList : [],
-        useInfo : [{
-            userId : userObj.userId,
-            userName : userObj.userName,
-            photoURL : userObj.photoURL
-        }]
+        useInfo : [
+            userObj.userId
+        ]
     };
     await fireStore.collection('project').doc(projectId).set(projectObj);
     return projectObj.projectInfo;

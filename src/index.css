@@ -10,6 +10,7 @@
 /*screen*/
 @import url('router/css/Auth.css');
 @import url('router/css/Profile.css');
+@import url('router/css/Project.css');
 @import url('router/css/Setting.css');
 @import url('router/css/CreateNewProject.css');
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 import 'components/css/Navigation.css';
-import { v4 as uuidv4 } from "uuid";  //키값을 위해 임시로 가져옴. 나중에 userInfo에서 ProjectList를 가져오면 projectKey값으로 할 것.
 
 const useSlideEvent = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -30,8 +29,11 @@ const useSlideEvent = () => {
   return {setNavOpen};
 }
 
-const Navigation = ({projectObjList}) => {
+const Navigation = ({userObj, setCurrentProject}) => {
   const {setNavOpen} = useSlideEvent();
+  const setProjectPath = (e) => {
+    console.log(e);
+  }
   return (
     <React.Fragment>
       <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet' />
@@ -51,14 +53,18 @@ const Navigation = ({projectObjList}) => {
               <span className="links-name" id="create-project-btn">Create Project</span>
             </Link>
           </li>
-          {projectObjList.map(projectObj => (
-            <li key={uuidv4()} className="nav-list">
-              <Link className="a-link" key={uuidv4()} to={{
+          {userObj.projectList.map(projectObj => (
+            <li key={projectObj.projectId} onClick={setProjectPath} className="nav-list">
+              <Link className="a-link" key={projectObj.projectId} to={{
                 pathname: "/project",
                 hash: `#${projectObj.projectName}`,
                 state: { fromDashboard: true }
               }}>
-                <i className='bx bxs-component'></i>
+                {userObj.setting.seeProjectWithIcon?(
+                  <i className='bx bxs-component'></i>
+                ):(
+                  <img src={projectObj.projectImg} alt="img" />
+                )}
                 <span className="links-name">{projectObj.projectName}</span>
               </Link>
             </li>

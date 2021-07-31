@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import {onAuthStateChanged, getUserObject, updateUserObj, createProject} from 'components/fComponents';
+import { onAuthStateChanged, getUserObject, updateUserObj } from 'components/fComponents';
 import Auth from 'router/Auth';
 import Navigation from 'components/Navigation';
 import Profile from 'router/Profile';
@@ -13,6 +13,7 @@ function useUserObjChangedListener() {
     const mountRef = useRef(false);
     useEffect(()=> {
         const uploadUserObj = async() => {
+            console.log(userObj);
             await updateUserObj(userObj);
         }
         if(mountRef.current) {
@@ -34,6 +35,16 @@ function useRedirectCreateProjectPage() {
     return {createProjectName, setCreateProjectName};
 }
 
+// const getCurrentProjectId = (projectList, projectName) => {
+//     let id = "";
+//     projectList.map(projectObj => {
+//         if(projectObj.projectName === projectName) {
+//             id = projectObj.projectId;
+//         }
+//     })
+//     return id;
+// }
+
 function AppRouter() {
     const [init, setInit] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,11 +56,15 @@ function AppRouter() {
     const hashChangeListener = () => {
         const hash = document.location.hash;
         const hashIndex = hash.indexOf('/project#');
-        if(hashIndex === -1) {
-            console.log("not project");
-        } else {
-            const projectName = hash.substring(hashIndex + '/project#'.length, );
+        if(hashIndex !== -1) {
+            const projectName = hash.substring(hashIndex + '/project#'.length);
             setCurrentProject(projectName);
+            // const lastEditedProjectId = getCurrentProjectId(userObj.projectList, projectName);
+            // console.log(lastEditedProjectId);
+            // setUserObj({
+            //     ...userObj,
+            //     lastEditedProjectId
+            // });
         }
     }
     useEffect(() => {
@@ -66,16 +81,17 @@ function AppRouter() {
             window.addEventListener('hashchange', hashChangeListener, false);
             didMountRef.current = true;
         }
-        return () => {
-            window.removeEventListener('hashchange', hashChangeListener, false);
-        };
     }, [isLoggedIn, setUserObj]);
 
     return (
         <React.Fragment>
             {init ? (
                 <Router>
-                    {isLoggedIn && userObj && <Navigation projectObjList={userObj.projectList}/>}
+                    {isLoggedIn && userObj && 
+                    <Navigation 
+                        userObj={userObj}
+                        setCurrentProject={setCurrentProject}
+                    />}
                     <Switch>
                         <React.Fragment>
                         {isLoggedIn ? (
@@ -102,7 +118,10 @@ function AppRouter() {
                                     </Route>
                                     )}
                                     <Route exact path="/setting">
-                                        <Setting userObj={userObj} setUserObj={setUserObj}/>
+                                        <Setting 
+                                            userObj={userObj} 
+                                            setUserObj={setUserObj}
+                                        />
                                     </Route>
                                     <Route exact path="/profile">
                                         <Profile userObj={userObj} setUserObj={setUserObj}/>
