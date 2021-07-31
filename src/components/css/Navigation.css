@@ -23,6 +23,9 @@
 .sideBar .header i {
     font-size: 32px;
 }
+.sideBar img {
+    pointer-events: none;
+}
 
 .sideBar .header{
     height: 60px;

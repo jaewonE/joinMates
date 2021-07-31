@@ -13,7 +13,7 @@ function useUserObjChangedListener() {
     const mountRef = useRef(false);
     useEffect(()=> {
         const uploadUserObj = async() => {
-            console.log(userObj);
+            // console.log(userObj);
             await updateUserObj(userObj);
         }
         if(mountRef.current) {
@@ -35,42 +35,22 @@ function useRedirectCreateProjectPage() {
     return {createProjectName, setCreateProjectName};
 }
 
-// const getCurrentProjectId = (projectList, projectName) => {
-//     let id = "";
-//     projectList.map(projectObj => {
-//         if(projectObj.projectName === projectName) {
-//             id = projectObj.projectId;
-//         }
-//     })
-//     return id;
-// }
-
 function AppRouter() {
     const [init, setInit] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [currentProject, setCurrentProject] = useState("");
+    const [projectPath, setProjectPath] = useState("");
+    const [chatroomPath, setChatroomPath] = useState("");
     const {userObj, setUserObj} = useUserObjChangedListener();
     const {createProjectName, setCreateProjectName} = useRedirectCreateProjectPage();
     const didMountRef = useRef(false);
 
-    const hashChangeListener = () => {
-        const hash = document.location.hash;
-        const hashIndex = hash.indexOf('/project#');
-        if(hashIndex !== -1) {
-            const projectName = hash.substring(hashIndex + '/project#'.length);
-            setCurrentProject(projectName);
-            // const lastEditedProjectId = getCurrentProjectId(userObj.projectList, projectName);
-            // console.log(lastEditedProjectId);
-            // setUserObj({
-            //     ...userObj,
-            //     lastEditedProjectId
-            // });
-        }
-    }
     useEffect(() => {
         const getAndSetUserObj = async() => {
             const user = await getUserObject();
-            setUserObj(user);
+            //user가 userObj이고 아직 로드 되기 전.
+            setProjectPath(user.lastEditedProjectId);
+            setChatroomPath(user.lastEditedChatroomName);
+            setUserObj(user); //이게 로드의 트리거
         }
         if(didMountRef.current) {
             if(isLoggedIn) {
@@ -78,7 +58,6 @@ function AppRouter() {
             }
         } else {
             onAuthStateChanged({setInit, setIsLoggedIn});
-            window.addEventListener('hashchange', hashChangeListener, false);
             didMountRef.current = true;
         }
     }, [isLoggedIn, setUserObj]);
@@ -90,7 +69,8 @@ function AppRouter() {
                     {isLoggedIn && userObj && 
                     <Navigation 
                         userObj={userObj}
-                        setCurrentProject={setCurrentProject}
+                        setUserObj={setUserObj}
+                        setProjectPath={setProjectPath}
                     />}
                     <Switch>
                         <React.Fragment>
@@ -99,10 +79,18 @@ function AppRouter() {
                                 {userObj && (
                                 <React.Fragment>
                                     <Route exact path='/'>
-                                        <Redirect to="/profile" />
+                                        {projectPath?(
+                                            <Redirect to={{
+                                                pathname: "/project",
+                                                hash: `#${projectPath.name}`,
+                                                state: { fromDashboard: true }
+                                            }} />
+                                        ):(
+                                            <Redirect to="/profile" />
+                                        )}
                                     </Route>
                                     <Route exact path="/project">
-                                        <Project currentProject={currentProject}/>
+                                        <Project projectPath={projectPath} chatroomPath={chatroomPath} setChatroomPath={setChatroomPath}/>
                                     </Route>
                                     {createProjectName?(
                                     <Route exact path="/project/new">

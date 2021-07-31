@@ -29,10 +29,16 @@ const useSlideEvent = () => {
   return {setNavOpen};
 }
 
-const Navigation = ({userObj, setCurrentProject}) => {
+const Navigation = ({userObj, setUserObj, setProjectPath}) => {
   const {setNavOpen} = useSlideEvent();
-  const setProjectPath = (e) => {
-    console.log(e);
+  const getProjectPath = (e) => {
+    const {id, name} = e.target;
+    const lastEditedProjectId = {id, name};
+    setProjectPath(lastEditedProjectId);
+    setUserObj({
+      ...userObj,
+      lastEditedProjectId
+    });
   }
   return (
     <React.Fragment>
@@ -54,12 +60,17 @@ const Navigation = ({userObj, setCurrentProject}) => {
             </Link>
           </li>
           {userObj.projectList.map(projectObj => (
-            <li key={projectObj.projectId} onClick={setProjectPath} className="nav-list">
-              <Link className="a-link" key={projectObj.projectId} to={{
-                pathname: "/project",
-                hash: `#${projectObj.projectName}`,
-                state: { fromDashboard: true }
-              }}>
+            <li key={projectObj.projectId} onClick={getProjectPath} className="nav-list">
+              <Link className="a-link" 
+                    id={projectObj.projectId}
+                    name={projectObj.projectName}
+                    key={projectObj.projectId} 
+                    to={{
+                      pathname: "/project",
+                      hash: `#${projectObj.projectName}`,
+                      state: { fromDashboard: true }
+                    }}
+              >
                 {userObj.setting.seeProjectWithIcon?(
                   <i className='bx bxs-component'></i>
                 ):(
