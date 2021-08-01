@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
-import 'components/css/Navigation.css';
 
 const useSlideEvent = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -33,11 +32,11 @@ const Navigation = ({userObj, setUserObj, setProjectPath}) => {
   const {setNavOpen} = useSlideEvent();
   const getProjectPath = (e) => {
     const {id, name} = e.target;
-    const lastEditedProjectId = {id, name};
-    setProjectPath(lastEditedProjectId);
+    const lastEditedProjectIdAndName = {id, name};
+    setProjectPath(lastEditedProjectIdAndName);
     setUserObj({
       ...userObj,
-      lastEditedProjectId
+      lastEditedProjectIdAndName
     });
   }
   return (
@@ -74,7 +73,7 @@ const Navigation = ({userObj, setUserObj, setProjectPath}) => {
                 {userObj.setting.seeProjectWithIcon?(
                   <i className='bx bxs-component'></i>
                 ):(
-                  <img src={projectObj.projectImg} alt="img" />
+                  <img className='profile_img' src={projectObj.projectImg} alt="img" />
                 )}
                 <span className="links-name">{projectObj.projectName}</span>
               </Link>

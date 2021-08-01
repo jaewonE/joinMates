@@ -86,7 +86,7 @@ const CreateNewProject = ({userObj, setUserObj, setCreateProjectName}) => {
       ...userObj,
       projectList
     });
-    await setCreateProjectName(projectInfo.projectName);
+    await setCreateProjectName({id: projectInfo.projectId, name: projectInfo.projectName});
     alert('sucessfully create projcet');
   }
 

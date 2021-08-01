@@ -1,22 +1,23 @@
 .profile_img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
     object-fit: cover;
+    border: 1px solid rgba(255,255,255,1);
+    border-radius: 50%;
 }
-.sm {
+.lg {
+    width: 35px;
+    height: 35px;
+}
+.lg2 {
     width: 40px;
     height: 40px;
 }
-.sm2 {
-    width: 30px;
-    height: 30px;
+.lg3 {
+    width: 45px;
+    height: 45px;
 }
-.lg {
-    width: 60px;
-    height: 60px;
-}
-.lg2 {
-    width: 70px;
-    height: 70px;
+.lg4 {
+    width: 50px;
+    height: 50px;
 }

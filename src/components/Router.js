@@ -23,16 +23,18 @@ function useUserObjChangedListener() {
     return {userObj, setUserObj};
 }
 
-function useRedirectCreateProjectPage() {
+function useRedirectCreateProjectPage(setProjectPath, setChatroomPath) {
     const [createProjectName, setCreateProjectName] = useState(null);
     useEffect(()=> {
         if(createProjectName) {
             setTimeout(()=> {
+                setProjectPath(createProjectName);
+                setChatroomPath("");
                 setCreateProjectName(null);
             },500);
         }
-    },[createProjectName]);
-    return {createProjectName, setCreateProjectName};
+    },[createProjectName, setProjectPath, setChatroomPath]);
+    return {createProjectName, setCreateProjectName, setChatroomPath};
 }
 
 function AppRouter() {
@@ -41,16 +43,15 @@ function AppRouter() {
     const [projectPath, setProjectPath] = useState("");
     const [chatroomPath, setChatroomPath] = useState("");
     const {userObj, setUserObj} = useUserObjChangedListener();
-    const {createProjectName, setCreateProjectName} = useRedirectCreateProjectPage();
+    const {createProjectName, setCreateProjectName} = useRedirectCreateProjectPage(setProjectPath, setChatroomPath);
     const didMountRef = useRef(false);
 
     useEffect(() => {
         const getAndSetUserObj = async() => {
             const user = await getUserObject();
-            //user가 userObj이고 아직 로드 되기 전.
-            setProjectPath(user.lastEditedProjectId);
+            setProjectPath(user.lastEditedProjectIdAndName);
             setChatroomPath(user.lastEditedChatroomName);
-            setUserObj(user); //이게 로드의 트리거
+            setUserObj(user); //로드의 트리거
         }
         if(didMountRef.current) {
             if(isLoggedIn) {
@@ -90,13 +91,18 @@ function AppRouter() {
                                         )}
                                     </Route>
                                     <Route exact path="/project">
-                                        <Project projectPath={projectPath} chatroomPath={chatroomPath} setChatroomPath={setChatroomPath}/>
+                                        <Project 
+                                            userObj={userObj}
+                                            projectPath={projectPath} 
+                                            chatroomPath={chatroomPath} 
+                                            setChatroomPath={setChatroomPath}
+                                        />
                                     </Route>
                                     {createProjectName?(
                                     <Route exact path="/project/new">
                                         <Redirect to={{
                                             pathname: "/project",
-                                            hash: `#${createProjectName}`,
+                                            hash: `#${createProjectName.name}`,
                                             state: { fromDashboard: true }
                                         }} />
                                     </Route>

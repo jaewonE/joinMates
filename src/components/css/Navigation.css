@@ -4,7 +4,8 @@
     top: 0;
     height: 100vh;
     width: 78px;
-    background: #11101D;
+    /* background: #11101D; */
+    background-color: #3F0E40;
     padding: 6px 14px;
     transition: all 0.5s ease;
 }
@@ -110,11 +111,6 @@
     transition: all 0.5s ease;
 }
 .a-link img {
-    width: 30px;
-    height: 30px;
-    object-fit: cover;
-    border-radius: 50%;
-
     position: relative;
     top: 8px;
     left: 10px;

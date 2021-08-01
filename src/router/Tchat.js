@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import CreateTchatRoom from 'router/CreateTchatRoom';
-import 'router/css/Tchat.css';
+// import 'router/css/Tchat.css';
 import test_img from 'router/css/test_img.jpg';
 
 const Tchat = () => {
@@ -18,7 +17,7 @@ const Tchat = () => {
                     </div>
                 </div>
                 {creatingChatroom ? (
-                    <CreateTchatRoom />
+                    <span>create chat room</span>
                 ):(
                     <React.Fragment>
                         <div className="chatList__search">

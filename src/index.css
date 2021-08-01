@@ -4,8 +4,10 @@
 
 /*components*/
 @import url('components/css/reset.css');
+@import url('components/css/profileImg.css');
 @import url('components/css/Navigation.css');
 @import url('components/css/router.css');
+@import url('components/css/ProjectNavigation.css');
 
 /*screen*/
 @import url('router/css/Auth.css');

@@ -56,7 +56,7 @@ const ifNewbieConstructUserData = async(data, name="set_your_name") => {
             setting: {
                 seeProjectWithIcon: false
             },
-            lastEditedProjectId : "",
+            lastEditedProjectIdAndName : "",
             lastEditedChatroomName : ""
         }
         return {isNewAccount, userObj};
@@ -94,7 +94,7 @@ const createProject = async(userObj, projectName="project_name", projectImgDataU
             projectImg,
         },
         chatList : [],
-        useInfo : [
+        userInfo : [
             userObj.userId
         ]
     };
@@ -341,6 +341,26 @@ const updateUserObj = async(userObj) => {
     await fireStore.collection('userList').doc(userObj.userId).update(userObj);
 }
 
+const getProjectInfo = async(projectId) => {
+    const projectObj = (await fireStore.collection('project').doc(projectId).get()).data();
+    const userIdList = projectObj.userInfo;
+    const userObjList = await Promise.all(
+        userIdList.map(async(userId) => {
+            const userInfo = (await fireStore.collection('userList').doc(userId).get()).data();
+            return {
+                name: userInfo.userName,
+                userId: userInfo.userId,
+                profileImg: userInfo.photoURL
+            };
+        })
+    );
+    return {
+        ...projectObj,
+        userObjList
+    }
+}
+
+
 export {authWithEmailAndPassword, 
     socialAccount, 
     createProject, 
@@ -359,7 +379,8 @@ export {authWithEmailAndPassword,
     updateUserName,
     updateUserProfileImg,
     uploadImg,
-    updateUserObj
+    updateUserObj,
+    getProjectInfo
 };
 
 //나중에 useState를 이용하여 사용자가 이동하는 경로를 추적하는 오브젝트를 하나 생성해서 해당 오브젝트를 인자로 넘기자 지금 인자가 너무 많다.
