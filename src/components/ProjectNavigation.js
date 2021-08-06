@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import { createChatroom } from './fComponents';
 
-const ProjectNavigation = ({userObj, projectObj}) => {
+const ProjectNavigation = ({userObj, setUserObj, projectObj, projectPath, setChatroomPath}) => {
     const [isAddmembers, setIsAddmembers] = useState(false);
     const [isAddChannels, setIsAddChannels] = useState(false);
     const [newMemberName, setNewMemberName] = useState("");
@@ -20,9 +21,27 @@ const ProjectNavigation = ({userObj, projectObj}) => {
         if(name === 'add-members') {
             console.log(name);
             console.log(newMemberName);
+            setIsAddmembers(false);
         } else if(name === 'add-channels'){
-            console.log(name);
-            console.log(newChannelName);
+            createChatroom({
+                userObj,
+                path: {
+                    projectPath,
+                    chatroomPath: newChannelName
+                }
+            });
+            let lastEditedProjectList = userObj.lastEditedProjectList;
+            for(let i=0; i<lastEditedProjectList.length;i++) {
+                if(lastEditedProjectList[i].projectPath.name === projectPath.name) {
+                    lastEditedProjectList[i].chatroomPath = newChannelName;
+                    setUserObj({
+                        ...userObj,
+                        lastEditedProjectList
+                    });
+                 };
+            };
+            setIsAddChannels(false);
+            setChatroomPath(newChannelName);
         }
     }
     const onChange = (e) => {
@@ -91,12 +110,12 @@ const ProjectNavigation = ({userObj, projectObj}) => {
                     <ul className='chatList__list-wrapper'>
                         {projectObj.chatList.map(chatroom => (
                             <li key={chatroom} className="chatList__list">
-                                <Link className="chatList__list-link" 
+                                <Link className="chatList__list-link"
                                         name={chatroom}
                                         key={chatroom} 
                                         to={{
-                                        pathname: "/project", 
-                                        hash: `#${projectObj.projectInfo.projectName}#${chatroom}`,
+                                        pathname: `/project/${projectObj.projectInfo.projectName}`, 
+                                        hash: `#${chatroom}`,
                                         state: { fromDashboard: true }
                                         }}
                                 >

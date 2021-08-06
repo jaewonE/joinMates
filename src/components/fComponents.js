@@ -53,11 +53,10 @@ const ifNewbieConstructUserData = async(data, name="set_your_name") => {
             photoURL,
             friends : [],
             projectList : [],
+            lastEditedProjectList: [],
             setting: {
                 seeProjectWithIcon: false
-            },
-            lastEditedProjectIdAndName : "",
-            lastEditedChatroomName : ""
+            }
         }
         return {isNewAccount, userObj};
     } else {
@@ -102,44 +101,60 @@ const createProject = async(userObj, projectName="project_name", projectImgDataU
     return projectObj.projectInfo;
 }
 
-//chatroomName을 활용해야 한다. 아직 구현 X
-const createChatroom = async(chatroomName, path = null) => {
+const createChatroom = async({userObj, path = null}) => {
+    console.log(userObj);
     if(!path) console.error("createChatroom Error : no path propoerty");
-    await createChat({path, chatType : "text", 
-        chat : "Congratulations! You just create a new chatRoom"
-    });
-    //projectInfo에 chat_list에 추가해야 함.
+    const currentProjectData = (await fireStore.doc(`project/${path.projectPath.id}`).get()).data();
+    let chatroomList = currentProjectData.chatList;
+    if(chatroomList.includes(path.chatroomPath)) {
+        alert('이미 존재하는 채널 이름입니다');
+    } else {
+        chatroomList.push(path.chatroomPath);
+        await fireStore.doc(`project/${path.projectPath.id}`).update({
+            ...currentProjectData,
+            chatList : chatroomList
+        });
+        await createChat({path, userObj, chatType : "text", 
+            chat : "Congratulations! You just create a new chatRoom"
+        });
+    }
     //공지사항란에 chatroom생성자와 함께 생성됨을 알려주는 기능 필요.
 }
 
-const createChat = async({path=null, createrId, chatType="text", chat="", commitTo=null}) => {
+const createChat = async({path=null, userObj, chatType="text", chat="", commitTo=null}) => {
     if(!path) console.error("createChat Error : no path propoerty");
-    //path[0] = projectId
-    //path[1] = chatroomName
+    if(!userObj.userId) console.error("createChat Error : no createrId propoerty");
     const createTime = String(Date.now());
     let chatObj = {
-        createrId,
+        createrObj: {
+            createrId: userObj.userId,
+            createrName: userObj.userName,
+            createrProfileImg: userObj.photoURL,
+            createrEmail: userObj.email
+        },
         chatType,
         doc : chat,
         createTime,
         isEdited : false,
         isCommit : false
     };
-    console.log(chatObj);
     if(chatType === "text") {
-        await fireStore.collection(`project/${path[0]}/${path[1]}`).doc(createTime).set(chatObj);
+        await fireStore.collection(`project/${path.projectPath.id}/${path.chatroomPath}`).doc(createTime).set(chatObj);
     } 
     //else if(chatType === img)
 }
 
-const createCommit = async({path=null, createrId, type="text", commit="", commitToId=null}) => {
+const createCommit = async({path=null, userObj, type="text", commit="", commitToId=null}) => {
     if(!path) console.error("createChat Error : no path propoerty");
     if(!commitToId) console.error("click the chat that you want to commit");
-    //path[0] = projectId
-    //path[1] = chatroomName
     const createTime = String(Date.now());
     let commitObj = {
-        createrId,
+        createrObj: {
+            createrId: userObj.userId,
+            createrName: userObj.userName,
+            createrProfileImg: userObj.photoURL,
+            createrEmail: userObj.email
+        },
         commitType : type,
         doc : commit,
         createTime, //이걸로 정렬하니깐 이건 필수
@@ -149,7 +164,7 @@ const createCommit = async({path=null, createrId, type="text", commit="", commit
     };
     console.log(commitObj);
     if(type === "text") {
-        await fireStore.collection(`project/${path[0]}/${path[1]}`).doc(createTime).set(commitObj);
+        await fireStore.collection(`project/${path.projectPath.id}/${path.chatroomPath}`).doc(createTime).set(commitObj);
     } //else if(chatType === img)
 }
 
@@ -170,15 +185,15 @@ const uploadProfileImg = async(userObj, imageURL) => {
 const updateChat = async({path = null, type='text', currentUserId, updateContents=""}) => {
     if(!path) console.error("updateChat Error : no path propoerty");
     let targetChat;
-    targetChat = (await fireStore.collection(`project/${path[0]}/${path[1]}`).doc(path[2]).get()).data();
-    if(currentUserId === targetChat.createrId) {
+    targetChat = (await fireStore.collection(`project/${ path.projectPath.id}/${path.chatroomPath}`).doc(path.chatPath).get()).data();
+    if(currentUserId === targetChat.createrObj.createrId) {
         if(type === 'text') {
             const newTargetChat = {
                 ...targetChat,
                 doc : updateContents,
                 isEdited : true
             };
-            await fireStore.doc(`project/${path[0]}/${path[1]}/${path[2]}`).update(newTargetChat);
+            await fireStore.doc(`project/${ path.projectPath.id}/${path.chatroomPath}/${path.chatPath}`).update(newTargetChat);
         }
     } else {
         return 'Permission denied : it is not your chat';
@@ -188,7 +203,7 @@ const updateChat = async({path = null, type='text', currentUserId, updateContent
 const deleteChat = async({path = null, type}) => {
     if(!path) console.error("updateChat Error : no path propoerty");
     if(type === 'text') {
-        await fireStore.doc(`project/${path[0]}/${path[1]}/${path[2]}`).delete();
+        await fireStore.doc(`project/${ path.projectPath.id}/${path.chatroomPath}/${path.chatPath}`).delete();
     }
 }
 
@@ -197,14 +212,14 @@ const getUserObject = async() => {
     return (await fireStore.collection('userList').doc(userId).get()).data();
 }
 
-const getChatList = ({path, limit=10, func}) => {
-    const bringChatList = fireStore.collection(`project/${path[0]}/${path[1]}`).orderBy("createTime", "asc").limitToLast(limit)
+const getChatList = ({path, setFunc, limit=10}) => {
+    const bringChatList = fireStore.collection(`project/${ path.projectPath.id}/${path.chatroomPath}`).orderBy("createTime", "asc").limitToLast(limit)
     .onSnapshot(async function(result) {
         const chatList = await Promise.all(
             result.docs.map(async(chat) => {
                 const data = chat.data();
                 if(data.isCommit) {
-                    const commitToObj =  (await fireStore.collection(`project/${path[0]}/${path[1]}`).doc(data.commitToId).get()).data();
+                    const commitToObj =  (await fireStore.collection(`project/${ path.projectPath.id}/${path.chatroomPath}`).doc(data.commitToId).get()).data();
                     return {
                         ...data,
                         commitToObj
@@ -214,7 +229,7 @@ const getChatList = ({path, limit=10, func}) => {
                 }
             })
         );
-        func(Array.from(chatList));
+        setFunc(Array.from(chatList));
     });
     //나중에 본게임에 가서 함수 수정할 때 onLoad를 표현하자. 
     return bringChatList;
@@ -341,26 +356,42 @@ const updateUserObj = async(userObj) => {
     await fireStore.collection('userList').doc(userObj.userId).update(userObj);
 }
 
-const getProjectInfo = async(projectId) => {
-    const projectObj = (await fireStore.collection('project').doc(projectId).get()).data();
-    const userIdList = projectObj.userInfo;
-    const userObjList = await Promise.all(
-        userIdList.map(async(userId) => {
-            const userInfo = (await fireStore.collection('userList').doc(userId).get()).data();
-            return {
-                name: userInfo.userName,
-                userId: userInfo.userId,
-                profileImg: userInfo.photoURL
-            };
-        })
-    );
-    return {
-        ...projectObj,
-        userObjList
-    }
+const getProjectInfo = async(projectId, setFunc) => {
+    let projectInfo = null;
+    const bringProjectObj = fireStore.collection('project').doc(projectId).onSnapshot(async function(result) {
+        const projectData = result.data();
+        const userIdList = projectData.userInfo;
+        const userObjList = await Promise.all(
+            userIdList.map(async(userId) => {
+                const userInfo = (await fireStore.collection('userList').doc(userId).get()).data();
+                return {
+                    name: userInfo.userName,
+                    userId: userInfo.userId,
+                    profileImg: userInfo.photoURL
+                };
+            })
+        );
+        projectInfo = {
+            ...projectData,
+            userObjList
+        };
+        setFunc(projectInfo);
+    });
+    // return new Promise(resolve => {
+    //     const waitForValue = setInterval(()=> {
+    //         if(projectInfo) {
+    //             clearInterval(waitForValue);
+    //             setFunc(projectInfo);
+    //             resolve(bringProjectObj);
+    //         } else {
+    //             console.log("waiting...");
+    //         };
+    //     },100);
+    // });
+    return bringProjectObj;
 }
 
-
+//chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
 export {authWithEmailAndPassword, 
     socialAccount, 
     createProject, 

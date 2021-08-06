@@ -14,13 +14,8 @@ const useSlideEvent = () => {
     }
   };
   useEffect(()=> {
-    // let currentPath = window.location.hash;
     if (didMountRef.current) {
       document.querySelector(".sideBar").classList.toggle("open");
-      // if(currentPath === '#/tchat') {
-      //   document.querySelector(".chatList-wrapper").classList.toggle("open");
-      //   document.querySelector(".chatList__search-margin").classList.toggle("open");
-      // }
       changeBtnShape(navOpen);
 
     } else didMountRef.current = true;
@@ -28,17 +23,8 @@ const useSlideEvent = () => {
   return {setNavOpen};
 }
 
-const Navigation = ({userObj, setUserObj, setProjectPath}) => {
+const Navigation = ({userObj}) => {
   const {setNavOpen} = useSlideEvent();
-  const getProjectPath = (e) => {
-    const {id, name} = e.target;
-    const lastEditedProjectIdAndName = {id, name};
-    setProjectPath(lastEditedProjectIdAndName);
-    setUserObj({
-      ...userObj,
-      lastEditedProjectIdAndName
-    });
-  }
   return (
     <React.Fragment>
       <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet' />
@@ -51,7 +37,8 @@ const Navigation = ({userObj, setUserObj, setProjectPath}) => {
         <ul className="projectList">
           <li className="nav-list">
             <Link className="a-link" to={{
-                pathname: "/project/new",
+                pathname: "/project",
+                hash: `#new`,
                 state: { fromDashboard: true }
             }}>
               <i className='bx bx-layer-plus'></i>
@@ -59,14 +46,14 @@ const Navigation = ({userObj, setUserObj, setProjectPath}) => {
             </Link>
           </li>
           {userObj.projectList.map(projectObj => (
-            <li key={projectObj.projectId} onClick={getProjectPath} className="nav-list">
+            <li key={projectObj.projectId} className="nav-list">
               <Link className="a-link" 
                     id={projectObj.projectId}
                     name={projectObj.projectName}
                     key={projectObj.projectId} 
                     to={{
-                      pathname: "/project",
-                      hash: `#${projectObj.projectName}`,
+                      pathname: `/project/${projectObj.projectName}`,
+                      // hash: `#${projectObj.projectName}`,
                       state: { fromDashboard: true }
                     }}
               >

@@ -1,7 +1,6 @@
 import { createProject } from 'components/fComponents';
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
-import { Link } from "react-router-dom";
 
 const CreateNewProject = ({userObj, setUserObj, setCreateProjectName}) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -82,9 +81,20 @@ const CreateNewProject = ({userObj, setUserObj, setCreateProjectName}) => {
       ...(userObj.projectList),
       projectInfo
     ];
+    const lastEditedProjectList = [
+      ...(userObj.lastEditedProjectList),
+      {
+        projectPath: {
+          id: projectInfo.projectId,
+          name: projectInfo.projectName
+        },
+        chatroomPath: ""
+      }
+    ]
     await setUserObj({
       ...userObj,
-      projectList
+      projectList,
+      lastEditedProjectList
     });
     await setCreateProjectName({id: projectInfo.projectId, name: projectInfo.projectName});
     alert('sucessfully create projcet');

@@ -1,0 +1,50 @@
+.createNewChatroom-container {
+    background-color: #EAE7DC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+.createNewChatroom-wrapper {
+    width: 330px;
+    height: 480px;
+    min-height: 480px;
+    background-color: white;
+    padding: 15px 25px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.createNewChatroom-wrapper input[type='text'] {
+    width: 90%;
+    height: 50px;
+    border: none;
+    border-bottom: 2px solid rgba(0,0,0,0.2);
+    padding: 0px 5px;
+    text-align: center;
+    font-size: 28px;
+    position: relative;
+    bottom: 10px;
+    caret-color: transparent;
+    overflow: auto;
+    transition: all 1s ease
+}
+.createNewChatroom-wrapper input[type='text']::placeholder {
+    opacity: 0.4;
+    font-weight: 500;
+}
+.createNewChatroom-wrapper input[type='submit'] {
+    width: 90%;
+    margin-top: 0px;
+    height: 35px;
+    background-color: #8977ad;
+    border: none;
+    border-radius: 4px;
+    font-size: 20px;
+    color: white;
+    font-weight: 700;
+}
