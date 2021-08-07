@@ -1,10 +1,3 @@
-.profile-wrapper {
-  width: 600px;
-  height: 400px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
 .editProfile-wrapper {
   width: 100%;
   height: 350px;

@@ -106,7 +106,7 @@ const ProfileCard = ({ userObj, setUserObj }) => {
   };
 
   return (
-    <div className="profile-wrapper">
+    <React.Fragment>
       <div className="editProfile-wrapper">
         <div className="profileImg-wrapper">
           <img src={profileImg} alt="Profile_img" />
@@ -223,7 +223,7 @@ const ProfileCard = ({ userObj, setUserObj }) => {
         <input type="button" onClick={logOut} value="Log Out" />
         <input type="button" onClick={deleteUser} value="Delete Account" />
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

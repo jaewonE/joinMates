@@ -1,0 +1,36 @@
+.profileNavigation-wrapper {
+  position: absolute;
+  top: -40px;
+  left: 0px;
+  display: flex;
+  justify-content: flex-start;
+  height: 40px;
+  width: 100%;
+}
+.profile-navi {
+  width: 130px;
+  height: 39px;
+  background-color: rgba(204, 146, 204, 0.9);
+  font-size: 20px;
+  font-weight: 700;
+  margin-right: 10px;
+  border: none;
+  border-top: 1px solid rgb(204, 146, 204);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.5;
+}
+.profile-navi span {
+  pointer-events: none;
+}
+#navi-profile {
+  width: 100px;
+}
+
+.profileNavigation-wrapper .focus {
+  opacity: 1;
+}
