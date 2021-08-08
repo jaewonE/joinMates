@@ -28,13 +28,14 @@ body,
 @import url('components/css/Navigation.css');
 @import url('components/css/router.css');
 @import url('components/css/ProjectNavigation.css');
-@import url('components/css/ProfileNavigation.css');
 
 /*screen*/
 @import url('router/css/Auth.css');
-@import url('router/css/Profile.css');
-@import url('router/css/ProfileCard.css');
-@import url('router/css/ProfileJoinProjectCard.css');
+@import url('router/Profile/css/Profile.css');
+@import url('router/Profile/css/ProfileCard.css');
+@import url('router/Profile/css/ProfileJoinProjectCard.css');
+@import url('router/Profile/css/ProfileRequestCard.css');
+@import url('router/Profile/css/ProfileNavigation.css');
 @import url('router/css/Project.css');
 @import url('router/css/Setting.css');
 @import url('router/css/CreateNewProject.css');

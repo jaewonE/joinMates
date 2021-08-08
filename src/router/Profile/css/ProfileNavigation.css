@@ -30,6 +30,12 @@
 #navi-profile {
   width: 100px;
 }
+#navi-joinProject {
+  width: 130px;
+}
+#navi-requestMessage {
+  width: 180px;
+}
 
 .profileNavigation-wrapper .focus {
   opacity: 1;

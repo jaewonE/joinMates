@@ -12,7 +12,7 @@ import {
 } from 'components/fComponents';
 import Auth from 'router/Auth';
 import Navigation from 'components/Navigation';
-import Profile from 'router/Profile';
+import Profile from 'router/Profile/Profile';
 import Setting from 'router/Setting';
 import Project from 'router/Project';
 import CreateNewProject from 'router/CreateNewProject';

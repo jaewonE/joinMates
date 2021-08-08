@@ -2,7 +2,7 @@ import {
   addProjectRequestUser,
   findProjectWithName,
 } from 'components/fComponents';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const ProfileJoinProjectCard = ({ userObj, setUserObj }) => {
   const [isEnterProject, setIsEnterProject] = useState(true);
@@ -47,29 +47,50 @@ const ProfileJoinProjectCard = ({ userObj, setUserObj }) => {
       setIsSearching(false);
     }
   };
+  const defineNotUserProject = () => {
+    const userProjectList = Array.from(userObj.projectList);
+    for (let i = 0; i < userProjectList.length; i++) {
+      if (projectList[count].id === userProjectList[i].projectId) {
+        return false;
+      }
+    }
+    return true;
+  };
+  const defineOverlopRequest = (projectId) => {
+    const requestMessages = Array.from(userObj.requestMessages);
+    console.log(requestMessages);
+    console.log(projectId);
+    for (let i = 0; i < requestMessages.length; i++) {
+      if (projectId === requestMessages[i].projectId) {
+        return false;
+      }
+    }
+    return true;
+  };
   const joinProject = async () => {
     const projectId = projectList[count].id;
-    console.log(projectList[count].id);
-    console.log(userObj);
-    await addProjectRequestUser(projectId, userObj);
-    const oldRequestMessages = Array.from(userObj.requestMessages);
-    const newRequestMessages = [
-      ...oldRequestMessages,
-      {
-        projectName: projectList[count].name,
-        projectId: projectList[count].id,
-        projectImg: projectList[count].projectImg,
-        leader: projectList[count].leader,
-        requestDate: Date.now(),
-      },
-    ];
-    console.log('requestMessages');
-    console.log(newRequestMessages);
-    setUserObj({
-      ...userObj,
-      requestMessages: newRequestMessages,
-    });
-    alert('Successfully send request message');
+    if (defineNotUserProject() && defineOverlopRequest(projectId)) {
+      await addProjectRequestUser(projectId, userObj);
+      const oldRequestMessages = Array.from(userObj.requestMessages);
+      const newRequestMessages = [
+        ...oldRequestMessages,
+        {
+          projectName: projectList[count].name,
+          projectId: projectList[count].id,
+          projectImg: projectList[count].projectImg,
+          leader: projectList[count].leader,
+          requestDate: Date.now(),
+          state: 'pending',
+        },
+      ];
+      setUserObj({
+        ...userObj,
+        requestMessages: newRequestMessages,
+      });
+      alert('Successfully send request message');
+    } else {
+      alert('This project has already subscribed or request');
+    }
   };
   const changeProjectListPage = (e) => {
     const {

@@ -115,13 +115,11 @@ const createProject = async ({
     createTime: String(Date.now()),
     requestUserList: [],
   };
-  console.log(projectObj);
   await fireStore.collection('project').doc(projectId).set(projectObj);
   return projectObj.projectInfo;
 };
 
 const createChatroom = async ({ userObj, path = null }) => {
-  console.log(userObj);
   if (!path) console.error('createChatroom Error : no path propoerty');
   const currentProjectData = (
     await fireStore.doc(`project/${path.projectPath.id}`).get()
@@ -566,12 +564,43 @@ const addProjectRequestUser = async (projectId, userObj) => {
       email: userObj.email,
     },
   ];
-  console.log('addProjectRequestUser');
-  console.log(requestUserList);
   await fireStore.doc(`project/${projectId}`).update({
     ...data,
     requestUserList,
   });
+};
+
+const addUserInProject = async (projectId, userId) => {
+  const data = (await fireStore.doc(`project/${projectId}`).get()).data();
+  const oldRequestUserList = Array.from(data.requestUserList);
+  let requestUserList = [];
+  for (let i = 0; i < oldRequestUserList.length; i++) {
+    if (oldRequestUserList[i].userId !== userId) {
+      requestUserList.push(oldRequestUserList[i]);
+    }
+  }
+  console.log(data.userInfo);
+  console.log('userId: ' + userId);
+  const userInfo = [...data.userInfo, userId];
+  console.log(userInfo);
+  console.log({
+    ...data,
+    requestUserList,
+    userInfo,
+  });
+  await fireStore.doc(`project/${projectId}`).update({
+    ...data,
+    requestUserList,
+    userInfo,
+  });
+  let chatroom = '';
+  if (Array.from(data.chatList).length) {
+    chatroom = data.chatList[0];
+  }
+  return {
+    projectInfo: data.projectInfo,
+    chatroom,
+  };
 };
 
 //chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
@@ -600,7 +629,5 @@ export {
   findProjectWithName,
   findUserWithEmail,
   addProjectRequestUser,
+  addUserInProject,
 };
-
-//나중에 useState를 이용하여 사용자가 이동하는 경로를 추적하는 오브젝트를 하나 생성해서 해당 오브젝트를 인자로 넘기자 지금 인자가 너무 많다.
-//해당 오브젝트에는 현재 위치, 유저가 클릭한 이벤트에 대한 글의 name(또는 id), type, 유저 정보(id, name, 등등)이 있어야 한다.
