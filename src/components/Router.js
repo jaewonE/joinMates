@@ -14,8 +14,8 @@ import Auth from 'router/Auth';
 import Navigation from 'components/Navigation';
 import Profile from 'router/Profile/Profile';
 import Setting from 'router/Setting';
-import Project from 'router/Project';
-import CreateNewProject from 'router/CreateNewProject';
+import Project from 'router/project/Project';
+import CreateNewProject from 'router/project/CreateNewProject';
 
 function useRedirectCreateProjectPage(setProjectPath) {
   const [createProjectName, setCreateProjectName] = useState(null);

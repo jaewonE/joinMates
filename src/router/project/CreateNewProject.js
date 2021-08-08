@@ -1,7 +1,7 @@
 import { createProject } from 'components/fComponents';
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
-import CreateNewProjectFriendsCard from './CreateNewProjectFriendsCard';
+import CreateNewProjectFriendsCard from 'router/project/CreateNewProjectFriendsCard';
 
 const CreateNewProject = ({ userObj, setUserObj, setCreateProjectName }) => {
   const [isFlipped, setIsFlipped] = useState(false);
