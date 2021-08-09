@@ -1,0 +1,138 @@
+.editProject-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  padding: 40px 20px;
+  display: flex;
+}
+.editprojectImg-wrapper {
+  width: 200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  top: 3px;
+}
+.editprojectImg-wrapper img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  position: relative;
+  top: 35px;
+}
+.editprojectImg-wrapper label {
+  position: relative;
+  top: -40px;
+  width: 200px;
+  height: 30px;
+  background-color: rgb(204, 146, 204);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.editprojectImg-wrapper input {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  opacity: 0;
+}
+.editProject-info {
+  padding-top: 40px;
+  padding-left: 30px;
+  width: 300px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  top: 10px;
+}
+.editProject-info ._label {
+  position: absolute;
+  font-size: 17px;
+  font-weight: 300;
+  opacity: 0.5;
+  top: 0px;
+  padding-left: 2px;
+  transition: all 0.5s ease;
+}
+.editProject-info ._input {
+  width: 260px;
+  height: 30px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  transition: all 0.5s ease;
+  padding-right: 62px;
+}
+.editProject-info ._btn {
+  border: none;
+  padding: 0px;
+  transition: all 0.5s ease;
+}
+.editProject-info .hidden_input {
+  position: absolute;
+  top: 0px;
+  right: 4px;
+  border: none;
+  width: 60px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+
+  color: white;
+  background-color: rgb(214, 174, 214);
+  transition: all 0.5s ease;
+}
+.editProject-info #editProject-name-btn {
+  top: 40px;
+}
+.editProject-info #editProject__description {
+  top: 130px;
+}
+.editProject-info .hidden_input {
+  opacity: 1;
+  transition: all 0.5s ease;
+}
+#projectName:focus ~ #editProject-name-btn,
+#editProject__description:focus ~ #editProject__description-btn {
+  opacity: 1;
+  transition: all 0.3s ease-in;
+  pointer-events: all;
+}
+.editProject-info .editProject-name {
+  left: 30px;
+  top: 20px;
+}
+.editProject-info .editProject-description {
+  top: 96px;
+  left: 30px;
+}
+#editProject__description {
+  margin-top: 55px;
+  border: none;
+  border: 1px solid black;
+  border-radius: 7px;
+  height: 150px;
+  padding: 5px;
+}
+#editProject__description:focus {
+  outline: none;
+}
+.editProject-info .btn-x {
+  left: 225px;
+}
+#projectName {
+  padding-left: 5px;
+}

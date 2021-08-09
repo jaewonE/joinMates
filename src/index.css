@@ -43,5 +43,10 @@ body,
 @import url('router/project/css/CreateNewChatroom.css');
 @import url('router/project/css/CreateNewProject.css');
 @import url('router/project/css/Project.css');
-@import url('router/project/css/ProjectEditProjectInfo.css');
 @import url('router/project/css/ProjectNavigation.css');
+@import url('router/project/css/EditProjectInfo.css');
+@import url('router/project/css/EditProjectNavigation.css');
+@import url('router/project/css/EditProjectCard.css');
+@import url('router/project/css/EditChannelCard.css');
+@import url('router/project/css/EditMemberCard.css');
+@import url('router/project/css/EditRequestMessageCard.css');

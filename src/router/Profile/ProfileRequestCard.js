@@ -1,6 +1,5 @@
 import { addUserInProject } from 'components/fComponents';
 import React, { useEffect, useState } from 'react';
-import CreateNewProjectFriendsCard from 'router/project/CreateNewProjectFriendsCard';
 
 const ProfileRequestCard = ({ userObj, setUserObj }) => {
   const [requestList, setRequestList] = useState(null);

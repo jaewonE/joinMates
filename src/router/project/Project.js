@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Chat from 'router/project/Chat';
 import ProjectNavigation from 'router/project/ProjectNavigation';
 import CreateNewChatroom from 'router/project/CreateNewChatroom';
-import ProjectEditProjectInfo from './ProjectEditProjectInfo';
+import EditProjectInfo from 'router/project/EditProjectInfo';
 
 const Project = ({
   userObj,
@@ -45,7 +45,7 @@ const Project = ({
           />
           <React.Fragment>
             {editProjectInfo ? (
-              <ProjectEditProjectInfo />
+              <EditProjectInfo projectObj={projectObj} />
             ) : (
               <React.Fragment>
                 {chatroomPath ? (

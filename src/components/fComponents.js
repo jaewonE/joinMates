@@ -80,10 +80,14 @@ const createUserObj = async (userObj) => {
 
 //get public url of uploaded project image.
 const uploadProjectImg = async (projectId, imageURL) => {
-  const fileRef = storage.ref().child(`projectImg/${projectId}`);
-  const response = await fileRef.putString(imageURL, 'data_url');
-  const responseURL = await response.ref.getDownloadURL();
-  return responseURL;
+  try {
+    const fileRef = storage.ref().child(`projectImg/${projectId}`);
+    const response = await fileRef.putString(imageURL, 'data_url');
+    const responseURL = await response.ref.getDownloadURL();
+    return responseURL;
+  } catch (error) {
+    return null;
+  }
 };
 
 //create project and add project id in fireStore_userList_projectList
@@ -195,7 +199,7 @@ const createCommit = async ({
     },
     commitType: type,
     doc: commit,
-    createTime, //이걸로 정렬하니깐 이건 필수
+    createTime,
     isEdited: false,
     isCommit: true,
     commitToId,
@@ -209,12 +213,12 @@ const createCommit = async ({
   } //else if(chatType === img)
 };
 
-const uploadImg = async (userObj, imageURL) => {
-  const fileRef = storage.ref().child(`${userObj.userId}/${uuidv4()}}`);
-  const response = await fileRef.putString(imageURL, 'data_url');
-  const responseURL = await response.ref.getDownloadURL();
-  return responseURL;
-};
+// const uploadImg = async (userObj, imageURL) => {
+//   const fileRef = storage.ref().child(`${userObj.userId}/${uuidv4()}}`);
+//   const response = await fileRef.putString(imageURL, 'data_url');
+//   const responseURL = await response.ref.getDownloadURL();
+//   return responseURL;
+// };
 
 const uploadProfileImg = async (userObj, imageURL) => {
   const fileRef = storage.ref().child(`profileImg/${userObj.userId}`);
@@ -442,6 +446,43 @@ const updateUserProfileImg = async (userObj, profileImg) => {
   return responseURL;
 };
 
+const updateProjectImg = async (projectId, projectImg) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  let projectInfo = projectObj.projectInfo;
+  const responseURL = await uploadProjectImg(projectId, projectImg);
+  if (responseURL) {
+    projectInfo.projectImg = responseURL;
+    await fireStore.doc(`project/${projectId}`).update({
+      ...projectObj,
+      projectInfo,
+    });
+    alert('Sucessfully change project image');
+    return responseURL;
+  } else {
+    alert("Error: can't upload project image");
+  }
+};
+
+const updateProjectName = async (projectId, projectName) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  let projectInfo = projectObj.projectInfo;
+  projectInfo.projectName = projectName;
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    projectInfo,
+  });
+  alert('Sucessfully change project name');
+};
+
+const updateProjectDescription = async (projectId, description) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    description,
+  });
+  alert('Sucessfully change project description');
+};
+
 const updateUserObj = async (userObj) => {
   await fireStore.collection('userList').doc(userObj.userId).update(userObj);
 };
@@ -623,11 +664,13 @@ export {
   updateEmail,
   updateUserName,
   updateUserProfileImg,
-  uploadImg,
   updateUserObj,
   getProjectInfo,
   findProjectWithName,
   findUserWithEmail,
   addProjectRequestUser,
   addUserInProject,
+  updateProjectImg,
+  updateProjectName,
+  updateProjectDescription,
 };
