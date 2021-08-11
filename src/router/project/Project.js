@@ -17,6 +17,7 @@ const Project = ({
   const [editProjectInfo, setEditProjectInfo] = useState(false);
 
   useEffect(() => {
+    setEditProjectInfo(false);
     const bringProjectStartInfo = async (projectPath_ID) => {
       const stopBringProjectObject = await getProjectInfo(
         projectPath_ID,

@@ -1,0 +1,201 @@
+.editChannelCard-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  padding: 35px 20px;
+  padding-top: 25px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.editChannelCard__title-wrapper {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  position: relative;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+  border-bottom-right-radius: 15px;
+}
+.editChannelCard__title-icon-wrapper {
+  height: 100%;
+  width: 35px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.editChannelCard__title-wrapper span {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: start;
+  padding-bottom: 8px;
+}
+.editChannelCard__title-wrapper i {
+  position: absolute;
+  bottom: 12px;
+  right: 25px;
+  font-size: 24px;
+}
+
+.editChannelCard__editChannelList-wrapper {
+  width: 100%;
+  margin-top: 5px;
+  height: calc(100% - 55px);
+  overflow: auto;
+}
+.editChannel-wrapper {
+  width: 100%;
+  height: 50px;
+  gap: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.editChannel__checkbox-wrapper {
+  height: 100%;
+  width: 40px;
+  padding-top: 15px;
+  padding-left: 15px;
+  min-width: 40px;
+}
+.editChannel__checkbox-wrapper div {
+  font-size: 10px;
+}
+.editChannel__info-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 20px;
+  position: relative;
+}
+.editChannel__info-wrapper input,
+.editChannel__info-wrapper button {
+  position: absolute;
+  top: 7px;
+  left: 0px;
+  width: 40%;
+  height: 70%;
+  border: none;
+  pointer-events: none;
+  opacity: 0;
+}
+.editChannel__info-wrapper input {
+  font-size: 16px;
+  padding-left: 3px;
+}
+.editChannel__info-wrapper button {
+  opacity: 1;
+  width: 45px;
+  height: 45%;
+  left: 180px;
+  top: 12px;
+  background-color: rgba(204, 146, 204, 0.87);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.editChannel__changeIcon-wrapper {
+  height: 100%;
+  width: 60px;
+  min-width: 60px;
+  padding-right: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+.editChannelCard__noChannel-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.3);
+}
+/* Base for label styling */
+.checkBox-input:not(:checked),
+.checkBox-input:checked {
+  position: absolute;
+  left: 0;
+  opacity: 0.01;
+}
+.checkBox-input:not(:checked) + label,
+.checkBox-input:checked + label {
+  position: relative;
+  padding-left: 2.3em;
+  font-size: 1.05em;
+  line-height: 1.7;
+  cursor: pointer;
+}
+
+/* checkbox aspect */
+.checkBox-input:not(:checked) + label:before,
+.checkBox-input:checked + label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 1.4em;
+  height: 1.4em;
+  border: 1px solid #aaa;
+  background: #fff;
+  border-radius: 0.2em;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 rgba(203, 34, 237, 0.2);
+  -webkit-transition: all 0.275s;
+  transition: all 0.275s;
+}
+
+/* checked mark aspect */
+.checkBox-input:not(:checked) + label:after,
+.checkBox-input:checked + label:after {
+  content: '✕';
+  position: absolute;
+  top: 0.525em;
+  left: 0.18em;
+  font-size: 1.375em;
+  color: #cb22ed;
+  line-height: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+/* checked mark aspect changes */
+.checkBox-input:not(:checked) + label:after {
+  opacity: 0;
+  -webkit-transform: scale(0) rotate(45deg);
+  transform: scale(0) rotate(45deg);
+}
+
+.checkBox-input:checked + label:after {
+  opacity: 1;
+  -webkit-transform: scale(1) rotate(0);
+  transform: scale(1) rotate(0);
+}
+.checkBox {
+  color: #aaa;
+}
+.editChannelCard__title-icon-wrapper i {
+  position: relative;
+  font-size: 23px;
+  font-weight: 700;
+  bottom: 1px;
+  right: 2px;
+  color: rgba(0, 0, 0, 0.7);
+}
+.editChannelCard__deleting {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createChatroom } from '../../components/fComponents';
+import { createChatroom } from 'components/fComponents';
 
 const ProjectNavigation = ({
   userObj,
@@ -25,7 +25,7 @@ const ProjectNavigation = ({
       setIsAddChannels((prev) => !prev);
     }
   };
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const {
       target: { name },
@@ -35,17 +35,18 @@ const ProjectNavigation = ({
       console.log(newMemberName);
       setIsAddmembers(false);
     } else if (name === 'add-channels') {
-      createChatroom({
+      const chatroomId = await createChatroom({
         userObj,
         path: {
           projectPath,
-          chatroomPath: newChannelName,
+          chatroomPath: { id: undefined, name: newChannelName },
         },
       });
+      const chatroomObj = { id: chatroomId, name: newChannelName };
       let lastEditedProjectList = userObj.lastEditedProjectList;
       for (let i = 0; i < lastEditedProjectList.length; i++) {
         if (lastEditedProjectList[i].projectPath.name === projectPath.name) {
-          lastEditedProjectList[i].chatroomPath = newChannelName;
+          lastEditedProjectList[i].chatroomPath = chatroomObj;
           setUserObj({
             ...userObj,
             lastEditedProjectList,
@@ -53,7 +54,8 @@ const ProjectNavigation = ({
         }
       }
       setIsAddChannels(false);
-      setChatroomPath(newChannelName);
+      setChatroomPath(chatroomObj);
+      setNewChannelName('');
     }
   };
   const onChange = (e) => {
@@ -169,19 +171,19 @@ const ProjectNavigation = ({
         ) : (
           <ul className="chatList__list-wrapper">
             {projectObj.chatList.map((chatroom) => (
-              <li key={chatroom} className="chatList__list">
+              <li key={chatroom.id} className="chatList__list">
                 <Link
                   className="chatList__list-link"
-                  name={chatroom}
-                  key={chatroom}
+                  name={chatroom.name}
+                  key={chatroom.id}
                   to={{
-                    pathname: `/project/${projectObj.projectInfo.projectName}`,
-                    hash: `#${chatroom}`,
+                    pathname: `/project/${projectObj.projectInfo.projectId}`,
+                    hash: `#${chatroom.id}==${chatroom.name}`,
                     state: { fromDashboard: true },
                   }}
                 >
                   <span className="chatList__list-hash">#</span>
-                  <span className="chatList__list-title">{chatroom}</span>
+                  <span className="chatList__list-title">{chatroom.name}</span>
                 </Link>
               </li>
             ))}

@@ -5,7 +5,7 @@ import EditProjectCard from 'router/project/EditProjectCard';
 import EditProjectNavigation from 'router/project/EditProjectNavigation';
 import EditRequestMessageCard from 'router/project/EditRequestMessageCard';
 
-const EditProjectInfo = ({ projectObj, setProjectObj }) => {
+const EditProjectInfo = ({ projectObj }) => {
   const [isEditProjectCard, setIsEditProjectCard] = useState(true);
   const [isEditchannelCard, setIsEditChannelCard] = useState(false);
   const [isEditMemberCard, setIsEditMemberCard] = useState(false);
@@ -19,13 +19,8 @@ const EditProjectInfo = ({ projectObj, setProjectObj }) => {
           setIsEditMemberCard={setIsEditMemberCard}
           setIsEditRequestCard={setIsEditRequestCard}
         />
-        {isEditProjectCard && (
-          <EditProjectCard
-            projectObj={projectObj}
-            setProjectObj={setProjectObj}
-          />
-        )}
-        {isEditchannelCard && <EditChannelCard />}
+        {isEditProjectCard && <EditProjectCard projectObj={projectObj} />}
+        {isEditchannelCard && <EditChannelCard projectObj={projectObj} />}
         {isEditMemberCard && <EditMemberCard />}
         {isEditRequestCard && <EditRequestMessageCard />}
       </div>

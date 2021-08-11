@@ -118,6 +118,7 @@ const createProject = async ({
     description,
     createTime: String(Date.now()),
     requestUserList: [],
+    lastChatId: 'ch0',
   };
   await fireStore.collection('project').doc(projectId).set(projectObj);
   return projectObj.projectInfo;
@@ -129,20 +130,38 @@ const createChatroom = async ({ userObj, path = null }) => {
     await fireStore.doc(`project/${path.projectPath.id}`).get()
   ).data();
   let chatroomList = currentProjectData.chatList;
-  if (chatroomList.includes(path.chatroomPath)) {
-    alert('이미 존재하는 채널 이름입니다');
-  } else {
-    chatroomList.push(path.chatroomPath);
+  let isOverlap = false;
+  for (let i = 0; i < Array.from(chatroomList).length; i++) {
+    if (chatroomList[i].name === path.chatroomPath.name) {
+      alert('이미 존재하는 채널 이름입니다');
+      isOverlap = true;
+      return;
+    }
+  }
+  if (!isOverlap) {
+    const preLastChatId = currentProjectData.lastChatId;
+    const chatIndex = Number(String(preLastChatId).slice(2)) + 1;
+    const lastChatId = `ch${chatIndex}`;
+    const newChatroomObj = { id: lastChatId, name: path.chatroomPath.name };
+    chatroomList = [...chatroomList, newChatroomObj];
     await fireStore.doc(`project/${path.projectPath.id}`).update({
       ...currentProjectData,
       chatList: chatroomList,
+      lastChatId,
     });
+    const newPath = {
+      projectPath: path.projectPath,
+      chatroomPath: newChatroomObj,
+    };
     await createChat({
-      path,
+      path: newPath,
       userObj,
       chatType: 'text',
       chat: 'Congratulations! You just create a new chatRoom',
     });
+    return `ch${chatIndex}`;
+  } else {
+    return;
   }
   //공지사항란에 chatroom생성자와 함께 생성됨을 알려주는 기능 필요.
 };
@@ -173,7 +192,7 @@ const createChat = async ({
   };
   if (chatType === 'text') {
     await fireStore
-      .collection(`project/${path.projectPath.id}/${path.chatroomPath}`)
+      .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
       .doc(createTime)
       .set(chatObj);
   }
@@ -207,7 +226,7 @@ const createCommit = async ({
   console.log(commitObj);
   if (type === 'text') {
     await fireStore
-      .collection(`project/${path.projectPath.id}/${path.chatroomPath}`)
+      .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
       .doc(createTime)
       .set(commitObj);
   } //else if(chatType === img)
@@ -237,7 +256,7 @@ const updateChat = async ({
   let targetChat;
   targetChat = (
     await fireStore
-      .collection(`project/${path.projectPath.id}/${path.chatroomPath}`)
+      .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
       .doc(path.chatPath)
       .get()
   ).data();
@@ -250,7 +269,7 @@ const updateChat = async ({
       };
       await fireStore
         .doc(
-          `project/${path.projectPath.id}/${path.chatroomPath}/${path.chatPath}`
+          `project/${path.projectPath.id}/${path.chatroomPath.id}/${path.chatPath}`
         )
         .update(newTargetChat);
     }
@@ -264,7 +283,7 @@ const deleteChat = async ({ path = null, type }) => {
   if (type === 'text') {
     await fireStore
       .doc(
-        `project/${path.projectPath.id}/${path.chatroomPath}/${path.chatPath}`
+        `project/${path.projectPath.id}/${path.chatroomPath.id}/${path.chatPath}`
       )
       .delete();
   }
@@ -272,12 +291,63 @@ const deleteChat = async ({ path = null, type }) => {
 
 const getUserObject = async () => {
   const userId = authService.currentUser.uid;
-  return (await fireStore.collection('userList').doc(userId).get()).data();
+  const userObj = (
+    await fireStore.collection('userList').doc(userId).get()
+  ).data();
+  const projectIdList = Array.from(userObj.projectList).map((project) => {
+    return project.projectId;
+  });
+  const projectListRef = await Promise.all(
+    projectIdList.map(async (projectId) => {
+      const projectObj = (
+        await fireStore.doc(`project/${projectId}`).get()
+      ).data();
+      const userList = Array.from(projectObj.userInfo);
+      if (userList.indexOf(userId) + 1) {
+        return {
+          projectInfo: projectObj.projectInfo,
+          lastEditedProject: {
+            chatroomPath: projectObj.chatList ? projectObj.chatList[0] : '',
+            projectPath: {
+              id: projectObj.projectInfo.projectId,
+              name: projectObj.projectInfo.projectName,
+            },
+          },
+          reject: false,
+        };
+      } else {
+        //project doesn't have userId: user has except from project by leader.
+        return {
+          projectInfo: projectObj.projectInfo.projectName,
+          lastEditedProject: null,
+          reject: true,
+        };
+      }
+    })
+  );
+  let projectList = [];
+  let rejectList = [];
+  let lastEditedProjectList = [];
+  for (let i = 0; i < projectListRef.length; i++) {
+    if (projectListRef[i].reject) {
+      rejectList = [...rejectList, projectListRef[i].projectInfo];
+    } else {
+      projectList = [...projectList, projectListRef[i].projectInfo];
+      lastEditedProjectList = [
+        ...lastEditedProjectList,
+        projectListRef[i].lastEditedProject,
+      ];
+    }
+  }
+  return {
+    reject: rejectList,
+    user: { ...userObj, lastEditedProjectList, projectList },
+  };
 };
 
 const getChatList = ({ path, setFunc, limit = 10 }) => {
   const bringChatList = fireStore
-    .collection(`project/${path.projectPath.id}/${path.chatroomPath}`)
+    .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
     .orderBy('createTime', 'asc')
     .limitToLast(limit)
     .onSnapshot(async function (result) {
@@ -288,7 +358,7 @@ const getChatList = ({ path, setFunc, limit = 10 }) => {
             const commitToObj = (
               await fireStore
                 .collection(
-                  `project/${path.projectPath.id}/${path.chatroomPath}`
+                  `project/${path.projectPath.id}/${path.chatroomPath.id}`
                 )
                 .doc(data.commitToId)
                 .get()
@@ -483,6 +553,73 @@ const updateProjectDescription = async (projectId, description) => {
   alert('Sucessfully change project description');
 };
 
+const updateProjectChatList = async (projectId, chatList) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    chatList,
+  });
+};
+
+const deleteProjectChannel = async (projectId, deleteList, setIsDeleteDone) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  const oldChatList = Array.from(projectObj.chatList);
+  let chatList = [];
+  let deleteChatIdList = [];
+  for (let i = 0; i < oldChatList.length; i++) {
+    let isDelete = false;
+    for (let j = 0; j < Array.from(deleteList).length; j++) {
+      if (oldChatList[i].name === deleteList[j]) {
+        isDelete = true;
+      }
+    }
+    if (isDelete) {
+      deleteChatIdList = [...deleteChatIdList, oldChatList[i].id];
+    } else {
+      chatList = [...chatList, oldChatList[i]];
+    }
+  }
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    chatList,
+  });
+  var docRef = fireStore.collection('haveToDelete').doc('chatList');
+  docRef
+    .get()
+    .then(async (doc) => {
+      if (doc.exists) {
+        let chatList = doc.data().chatList;
+        chatList = [
+          ...Array.from(chatList),
+          {
+            projectId: projectId,
+            deleteList: deleteChatIdList,
+          },
+        ];
+        await fireStore.collection('haveToDelete').doc('chatList').update({
+          chatList,
+        });
+      } else {
+        await fireStore
+          .collection('haveToDelete')
+          .doc('chatList')
+          .set({
+            chatList: [
+              {
+                projectId: projectId,
+                deleteList: deleteChatIdList,
+              },
+            ],
+          });
+      }
+    })
+    .catch((error) => {
+      console.log('Error getting document:', error);
+    });
+  setIsDeleteDone(true);
+  return Array.from(chatList);
+};
+
 const updateUserObj = async (userObj) => {
   await fireStore.collection('userList').doc(userObj.userId).update(userObj);
 };
@@ -645,7 +782,6 @@ const addUserInProject = async (projectId, userId) => {
 };
 
 //chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
-//hash에서 가져오는거다 보니깐 프로젝트 이름이 같은게 있으면 둘 중 하나만 가져옴.
 export {
   authWithEmailAndPassword,
   socialAccount,
@@ -673,4 +809,6 @@ export {
   updateProjectImg,
   updateProjectName,
   updateProjectDescription,
+  updateProjectChatList,
+  deleteProjectChannel,
 };

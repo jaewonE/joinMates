@@ -49,7 +49,11 @@ function AppRouter() {
     for (let i = 0; i < lastEditedProjectList.length; i++) {
       if (lastEditedProjectList[i].projectPath.id === projectId) {
         if (chatroomName) {
-          lastEditedProjectList[i].chatroomPath = chatroomName;
+          const chatroomRef = String(chatroomName).split('==');
+          lastEditedProjectList[i].chatroomPath = {
+            id: chatroomRef[0],
+            name: chatroomRef[1],
+          };
           setUserObj({
             ...userObj,
             lastEditedProjectList,
@@ -93,7 +97,7 @@ function AppRouter() {
               projectHash,
               chatroomHash
             );
-            setChatroomPath(chatroomHash);
+            setChatroomPath(projectHashObj.chatroomPath);
             setProjectPath(projectHashObj.projectPath);
           } else {
             //no info of chatroom == project move

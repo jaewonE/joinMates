@@ -2,7 +2,7 @@ import {
   addProjectRequestUser,
   findProjectWithName,
 } from 'components/fComponents';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 const ProfileJoinProjectCard = ({ userObj, setUserObj }) => {
   const [isEnterProject, setIsEnterProject] = useState(true);

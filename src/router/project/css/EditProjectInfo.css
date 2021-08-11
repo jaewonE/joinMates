@@ -8,10 +8,10 @@
   height: 100vh;
 }
 .editProjectInfo-wrapper {
-  width: 540px;
-  height: 400px;
-  min-width: 540px;
-  min-height: 400px;
+  width: 600px;
+  height: 350px;
+  min-width: 600px;
+  min-height: 350px;
   position: relative;
   display: flex;
   background-color: white;

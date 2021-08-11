@@ -23,7 +23,7 @@ const getChatTime = (num) => {
 
 const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
   const [userInput, setUserInput] = useState('');
-  const [chatPath, setChatPath] = useState('');
+  // const [chatPath, setChatPath] = useState('');
   const [chatList, setChatList] = useState([]);
   const onMount = useRef(false);
   const scrollDown = useRef(true);
@@ -104,7 +104,7 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
   const dlatl = () => {
     console.log('projectPath name: ' + projectPath.name);
     console.log('chatRoomPath: ' + chatroomPath);
-    console.log('chatPath: ' + chatPath);
+    // console.log('chatPath: ' + chatPath);
     console.log(projectObj);
     console.log('userObj');
     console.log(userObj);
@@ -131,7 +131,7 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
     <div className="chat-wrapper">
       <div className="chat__header">
         <div className="chat__header-title">
-          <span>#{chatroomPath}</span>
+          <span>#{chatroomPath.name}</span>
         </div>
         <div className="chat__header-additional">
           <div className="chat__header-search">

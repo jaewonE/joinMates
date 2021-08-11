@@ -10,6 +10,8 @@
 .profile-wrapper {
   width: 600px;
   height: 400px;
+  min-width: 600px;
+  min-height: 400px;
   position: relative;
   display: flex;
   flex-direction: column;

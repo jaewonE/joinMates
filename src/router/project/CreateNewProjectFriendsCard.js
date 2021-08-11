@@ -61,8 +61,11 @@ const CreateNewProjectFriendsCard = ({
           value={friendsSearchValue}
           onChange={onChangeEmail}
           placeholder="Enter members email"
+          id="friends-title__input-email"
         />
-        <i className="bx bx-search"></i>
+        <label htmlFor="friends-title__input-email">
+          <i className="bx bx-search"></i>
+        </label>
       </div>
 
       <div className="friends-searchResult">
