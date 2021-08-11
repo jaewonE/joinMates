@@ -129,6 +129,8 @@ const EditChannelCard = ({ projectObj }) => {
         console.log(newChatList);
         setChatList(newChatList);
       }
+    } else {
+      alert('삭제할 채널을 선택해 주세요.');
     }
   };
   return (

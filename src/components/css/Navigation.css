@@ -1,185 +1,182 @@
 .sideBar {
-    position: relative;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 78px;
-    /* background: #11101D; */
-    background-color: #3F0E40;
-    padding: 6px 14px;
-    transition: all 0.5s ease;
+  position: relative;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 78px;
+  /* background: #11101D; */
+  background-color: #3f0e40;
+  padding: 6px 14px;
+  transition: all 0.5s ease;
 }
 .sideBar.open {
-    width: 228px;
+  width: 228px;
 }
 
 .sideBar i {
-    color: #fff;
-    height: 50px;
-    min-width: 50px;
-    font-size: 28px;
-    text-align: center;
-    line-height: 50px;
+  color: #fff;
+  height: 50px;
+  min-width: 50px;
+  font-size: 28px;
+  text-align: center;
+  line-height: 50px;
 }
 .sideBar .header i {
-    font-size: 32px;
+  font-size: 32px;
 }
 .sideBar img {
-    pointer-events: none;
+  pointer-events: none;
 }
 
-.sideBar .header{
-    height: 60px;
-    width: 50px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 0px 2px;
-    margin: 5px 0px;
+.sideBar .header {
+  height: 60px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0px 2px;
+  margin: 5px 0px;
 }
 .sideBar.open .header {
-    width: 200px;
+  width: 200px;
 }
-.sideBar .header #header-btn{
-    position: absolute;
-    top: 5px;
-    left: -2px;
-    font-size: 23px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.5s ease;
+.sideBar .header #header-btn {
+  position: absolute;
+  top: 5px;
+  left: -2px;
+  font-size: 23px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.5s ease;
 }
-.sideBar.open .header #header-btn{
-    transform: translateX(160px);
+.sideBar.open .header #header-btn {
+  transform: translateX(160px);
 }
 .sideBar .header-name {
-    position: relative;
-    top: -1px;
-    left: 3px;
-    opacity: 0;
-    transition: all 0.5s ease;
+  position: relative;
+  top: -1px;
+  left: 3px;
+  opacity: 0;
+  transition: all 0.5s ease;
 }
-.sideBar.open .header .header-name{
-    opacity: 1;
-    transition: all 0.5s ease;
+.sideBar.open .header .header-name {
+  opacity: 1;
+  transition: all 0.5s ease;
 }
-.sideBar .header .header-name{
-    height: 60px;
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    opacity: 0;
-    transition: all 0.5s ease;
-    margin-top: 6px;
-    padding-top: 21px;
+.sideBar .header .header-name {
+  height: 60px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all 0.5s ease;
+  margin-top: 6px;
+  padding-top: 21px;
 }
-.sideBar .header i{
-    opacity: 1;
-    transition: all 0.5s ease;
+.sideBar .header i {
+  opacity: 1;
+  transition: all 0.5s ease;
 }
 
-
-.footer, .projectList {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    text-decoration: none;
-    color: white;
+.footer,
+.projectList {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  text-decoration: none;
+  color: white;
 }
 .projectList {
-    height: calc(100vh - 200px);
+  height: calc(100vh - 200px);
 }
 .nav-list {
-    color: #fff;
-    height: 50px;
-    min-width: 50px;
-    font-size: 20px;
-    text-align: start;
-    line-height: 50px;
+  color: #fff;
+  height: 50px;
+  min-width: 50px;
+  font-size: 20px;
+  text-align: start;
+  line-height: 50px;
 
-    margin: 3px 0px;
+  margin: 3px 0px;
 }
 .sideBar.open .nav-list {
-    width: 200px;
+  width: 200px;
 }
 .a-link {
-    display: block;
-    width: 50px;
-    height: 50px;
-    position: relative;
-    border-radius: 12px;
-    transition: all 0.5s ease;
+  display: block;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  border-radius: 12px;
+  transition: all 0.5s ease;
 }
 .a-link img {
-    position: relative;
-    top: 8px;
-    left: 10px;
+  position: relative;
+  top: 8px;
+  left: 10px;
 }
 .sideBar.open .a-link {
-    width: 200px;
+  width: 200px;
 }
 .links-name {
-    color: white;
-    background-color: rgba(255,255,255,0);
-    font-weight: 900;
+  color: white;
+  background-color: rgba(255, 255, 255, 0);
+  font-weight: 900;
 
-    opacity: 0;
-    position: absolute;
-    top: 5px;
-    left: 53px;
-    pointer-events: none; 
-    line-height: 30px;
-    border-radius: 8px;
-    padding: 3px;
-    transition: all 0.5s ease;
-    white-space: nowrap;
-    overflow: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 5px;
+  left: 53px;
+  pointer-events: none;
+  line-height: 30px;
+  border-radius: 8px;
+  padding: 3px;
+  transition: all 0.5s ease;
+  white-space: nowrap;
+  overflow: hidden;
 }
 #create-project-btn {
-    top: 10px;
-    left: 50px;
+  top: 10px;
+  left: 50px;
 }
 .sideBar.open .a-link:hover .links-name {
-    top: 5px;
-    left: 53px;
+  top: 5px;
+  left: 53px;
 }
 .sideBar.open .a-link:hover #create-project-btn {
-    left: 50px;
+  left: 50px;
 }
 .a-link:hover .links-name {
-    top: 7px;
-    left: 73px;
-    z-index: 5;
+  top: 7px;
+  left: 73px;
+  z-index: 5;
 }
 .a-link:hover #create-project-btn {
-    left: 70px;
+  left: 70px;
 }
 .a-link:hover {
-    background-color: #FFF;
-    transition: all 0.5s ease;
+  background-color: #fff;
+  transition: all 0.5s ease;
 }
 .a-link:hover i,
 .a-link:hover .links-name {
-    opacity: 1;
-    color: #1d1b31;
-    transition: all 0.5s ease;
+  opacity: 1;
+  color: #1d1b31;
+  transition: all 0.5s ease;
 }
 .a-link:hover .links-name {
-    background-color: #FFF;
+  background-color: #fff;
 }
 .sideBar.open .a-link:hover .links-name {
-    background-color: rgba(255,255,255,0);
+  background-color: rgba(255, 255, 255, 0);
 }
 
 .sideBar.open .links-name {
-    opacity: 1;
-    transition: all 0.5s ease;
+  opacity: 1;
+  transition: all 0.5s ease;
 }
-
 
 .footer {
-    position: absolute;
-    bottom: 5px;
+  position: absolute;
+  bottom: 5px;
 }
-
-

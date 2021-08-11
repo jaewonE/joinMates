@@ -641,6 +641,7 @@ const getProjectInfo = async (projectId, setFunc) => {
             name: userInfo.userName,
             userId: userInfo.userId,
             profileImg: userInfo.photoURL,
+            email: userInfo.email,
           };
         })
       );
