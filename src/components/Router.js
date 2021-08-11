@@ -35,6 +35,7 @@ function AppRouter() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [projectPath, setProjectPath] = useState('');
   const [chatroomPath, setChatroomPath] = useState('');
+  const [rejectList, setRejectList] = useState(null);
   const [hashHistory, setHashHistory] = useState('');
   const [userObj, setUserObj] = useState(null);
   const { createProjectName, setCreateProjectName } =
@@ -43,10 +44,10 @@ function AppRouter() {
   const didUserObjMountRef = useRef(false);
   const didSetMountRef = useRef(false);
 
-  const searchMatchProject = (userObj, projectName, chatroomName = '') => {
+  const searchMatchProject = (userObj, projectId, chatroomName = '') => {
     let lastEditedProjectList = userObj.lastEditedProjectList;
     for (let i = 0; i < lastEditedProjectList.length; i++) {
-      if (lastEditedProjectList[i].projectPath.name === projectName) {
+      if (lastEditedProjectList[i].projectPath.id === projectId) {
         if (chatroomName) {
           lastEditedProjectList[i].chatroomPath = chatroomName;
           setUserObj({
@@ -84,7 +85,7 @@ function AppRouter() {
           const projectHashRef = decodeHash.slice(isProjectHash.length);
           const hashIndex = projectHashRef.indexOf('#');
           if (hashIndex + 1) {
-            //url has info of chatroom
+            //url has info of chatroom = channel move
             const projectHash = projectHashRef.slice(0, hashIndex);
             const chatroomHash = projectHashRef.slice(hashIndex + 1);
             const projectHashObj = searchMatchProject(
@@ -95,7 +96,7 @@ function AppRouter() {
             setChatroomPath(chatroomHash);
             setProjectPath(projectHashObj.projectPath);
           } else {
-            //no info of chatroom
+            //no info of chatroom == project move
             const projectHashObj = searchMatchProject(
               userObj,
               projectHashRef,
@@ -117,15 +118,23 @@ function AppRouter() {
       if (!didSetMountRef.current) {
         set();
         didSetMountRef.current = true;
+        if (rejectList) {
+          for (let i = 0; i < Array.from(rejectList).length; i++) {
+            alert(
+              `${rejectList[i]} 프로젝트의 리더에 의하여 당신은 프로젝트에서 제외되었습니다`
+            );
+          }
+        }
       }
       window.addEventListener('hashchange', set);
     }
     return () => window.removeEventListener('hashchange', set);
-  }, [userObj, set]);
+  }, [userObj, set, rejectList]);
 
   useEffect(() => {
     const getAndSetUserObj = async () => {
-      const user = await getUserObject();
+      const { reject, user } = await getUserObject();
+      setRejectList(reject);
       setUserObj(user); //로드의 트리거
     };
     if (didAuthMountRef.current) {
@@ -152,7 +161,7 @@ function AppRouter() {
                       <Route exact path="/">
                         <Redirect to="/profile" />
                       </Route>
-                      <Route exact path="/project/:projectPathName">
+                      <Route exact path="/project/:projectPathId">
                         {projectPath && (
                           <Project
                             userObj={userObj}
@@ -167,7 +176,7 @@ function AppRouter() {
                         <Route exact path="/project">
                           <Redirect
                             to={{
-                              pathname: `/project/${createProjectName.name}`,
+                              pathname: `/project/${createProjectName.id}`,
                               state: { fromDashboard: true },
                             }}
                           />
@@ -215,15 +224,3 @@ function AppRouter() {
 }
 
 export default AppRouter;
-
-/*
-문제가 무었인가.
-순서
-1. 로그인 상태를 확인
-2. 로그인이 되었다면 userObj를 반환하고 그렇지 않으면 null값을 return한다. 
-3. userObj가 존재하면 내용이 담긴 component, 그렇지 않으면 auth 창을 보여준다. 
-
-네비게이션에서 링크를 통해 이동하면 해시가 바뀐다. 이것을 addEventListener를 두어 해시 채인지를 감지하여 projectPath와 chatroomPath를 체크한다.
-여기서 문제!
-프로젝트 창에서 새로고침을 하였는 경우 이벤트가 실행되는 것이 아닌 이벤트 르스너가 설치 되는 것임으로 projectPath와 chatroomPath가 존재하지 않는다. 
-*/
