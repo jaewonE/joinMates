@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const EditMemberCard = ({ projectObj }) => {
   const [userObjList, setUserObjList] = useState(projectObj.userObjList);
@@ -11,6 +11,7 @@ const EditMemberCard = ({ projectObj }) => {
           {userObjList.map((memberObj, index) => {
             return (
               <li
+                key={index}
                 onClick={() => setCardMember(memberObj)}
                 className="editMember__member"
               >

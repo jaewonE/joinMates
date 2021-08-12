@@ -1,7 +1,7 @@
 import { addProjectMember, rejectRequestMember } from 'components/fComponents';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-const EditRequestMessageCard = ({ projectObj }) => {
+const EditRequestMessageCard = ({ projectObj, userObj }) => {
   const [requestList, setRequestList] = useState(
     Array.from(projectObj.requestUserList)
   );
@@ -12,7 +12,8 @@ const EditRequestMessageCard = ({ projectObj }) => {
     if (value === 'Permit') {
       const requestMessages = await addProjectMember(
         projectObj.projectInfo.projectId,
-        name
+        name,
+        userObj
       );
       setRequestList(requestMessages);
     } else if (value === 'Refuse') {

@@ -6,6 +6,7 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
   useEffect(() => {
     let change = false;
     const oldRequestList = Array.from(userObj.requestMessages);
+    console.log(oldRequestList);
     let newRequestList = [];
     for (let i = 0; i < oldRequestList.length; i++) {
       if (oldRequestList[i].state === 'reject') {
@@ -16,10 +17,14 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
         } else {
           change = true;
         }
+      } else if (oldRequestList[i].state === 'fulfilled') {
+        change = true;
       } else {
         newRequestList.push(oldRequestList[i]);
       }
     }
+    console.log(change);
+    console.log(newRequestList);
     if (change) {
       setUserObj({
         ...userObj,
@@ -27,6 +32,7 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
       });
     }
     if (newRequestList.length) {
+      console.log(newRequestList);
       setRequestList(newRequestList);
     } else {
       setRequestList(null);
@@ -47,10 +53,10 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
   };
   const joinProject = async (e) => {
     const {
-      target: { id },
+      target: { name },
     } = e;
     const { chatroom, projectInfo } = await addUserInProject(
-      id,
+      name,
       userObj.userId
     );
 
@@ -67,7 +73,7 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
     const oldRequestList = Array.from(requestList);
     let requestMessages = [];
     for (let i = 0; i < oldRequestList.length; i++) {
-      if (oldRequestList[i].projectId !== id) {
+      if (oldRequestList[i].projectId !== name) {
         requestMessages.push(oldRequestList[i]);
       }
     }
@@ -75,6 +81,23 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
       ...userObj,
       lastEditedProjectList,
       projectList,
+      requestMessages,
+    });
+    setRequestList(requestMessages);
+  };
+  const rejectProject = (e) => {
+    const {
+      target: { name },
+    } = e;
+    const oldRequestList = Array.from(requestList);
+    let requestMessages = [];
+    for (let i = 0; i < oldRequestList.length; i++) {
+      if (oldRequestList[i].projectId !== name) {
+        requestMessages.push(oldRequestList[i]);
+      }
+    }
+    setUserObj({
+      ...userObj,
       requestMessages,
     });
     setRequestList(requestMessages);
@@ -123,7 +146,7 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
                           type="button"
                           className="request-state__btn"
                           value="Join"
-                          id={message.projectId}
+                          name={message.projectId}
                           onClick={joinProject}
                         />
                       </div>
@@ -135,11 +158,15 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
                       <div className="request-state__wrapper state-request">
                         <span>요청</span>
                         <input
+                          name={message.projectId}
+                          onClick={joinProject}
                           type="button"
                           className="request-state__btn"
                           value="Join"
                         />
                         <input
+                          name={message.projectId}
+                          onClick={rejectProject}
                           type="button"
                           className="request-state__btn"
                           value="Reject"

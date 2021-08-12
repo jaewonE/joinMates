@@ -1,4 +1,7 @@
-import { createProject } from 'components/fComponents';
+import {
+  createProject,
+  sendAttendMessageWhenCreateProject,
+} from 'components/fComponents';
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
 import CreateNewProjectFriendsCard from 'router/project/CreateNewProjectFriendsCard';
@@ -86,38 +89,43 @@ const CreateNewProject = ({ userObj, setUserObj, setCreateProjectName }) => {
   const setProject = async (e) => {
     e.preventDefault();
     const description = document.querySelector('#description-paper').value;
-    const memberIdList = memberList.map((member) => {
-      return member.userId;
-    });
-    memberIdList.push(userObj.userId);
-    const projectInfo = await createProject({
-      userObj,
-      projectName: titleInput,
-      projectImgDataURL: projectImg,
-      memberIdList,
-      description: description,
-    });
-    const projectList = [...userObj.projectList, projectInfo];
-    const lastEditedProjectList = [
-      ...userObj.lastEditedProjectList,
-      {
-        projectPath: {
-          id: projectInfo.projectId,
-          name: projectInfo.projectName,
+    if (description) {
+      const projectInfo = await createProject({
+        userObj,
+        projectName: titleInput,
+        projectImgDataURL: projectImg,
+        memberIdList: [userObj.userId],
+        description: description,
+      });
+      const projectList = [...userObj.projectList, projectInfo];
+      const lastEditedProjectList = [
+        ...userObj.lastEditedProjectList,
+        {
+          projectPath: {
+            id: projectInfo.projectId,
+            name: projectInfo.projectName,
+          },
+          chatroomPath: '',
         },
-        chatroomPath: '',
-      },
-    ];
-    await setUserObj({
-      ...userObj,
-      projectList,
-      lastEditedProjectList,
-    });
-    await setCreateProjectName({
-      id: projectInfo.projectId,
-      name: projectInfo.projectName,
-    });
-    alert('sucessfully create projcet');
+      ];
+      await sendAttendMessageWhenCreateProject(
+        userObj,
+        memberList,
+        projectInfo
+      );
+      await setUserObj({
+        ...userObj,
+        projectList,
+        lastEditedProjectList,
+      });
+      await setCreateProjectName({
+        id: projectInfo.projectId,
+        name: projectInfo.projectName,
+      });
+      alert('성공적으로 프로젝트를 생성하였습니다');
+    } else {
+      alert('프로젝트 설명을 적어주세요');
+    }
   };
   return (
     <div className="createNewProject-container">

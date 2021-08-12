@@ -100,15 +100,6 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
       chat__body.scrollTop = chat__body.scrollHeight;
     }
   }, [chatList]);
-
-  const dlatl = () => {
-    console.log('projectPath name: ' + projectPath.name);
-    console.log('chatRoomPath: ' + chatroomPath);
-    // console.log('chatPath: ' + chatPath);
-    console.log(projectObj);
-    console.log('userObj');
-    console.log(userObj);
-  };
   const onChange = (e) => {
     const {
       target: { value },
@@ -139,7 +130,7 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
             <input type="text" placeholder="Search" />
           </div>
           <div className="chat__header-more">
-            <i onClick={dlatl} className="bx bx-dots-vertical-rounded"></i>
+            <i className="bx bx-dots-vertical-rounded"></i>
           </div>
         </div>
       </div>

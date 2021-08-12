@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createChatroom } from 'components/fComponents';
+import {
+  addProjectMember,
+  addProjectRequestUser,
+  createChatroom,
+  findUserWithEmail,
+} from 'components/fComponents';
 
 const ProjectNavigation = ({
   userObj,
@@ -31,8 +36,19 @@ const ProjectNavigation = ({
       target: { name },
     } = e;
     if (name === 'add-members') {
-      console.log(name);
       console.log(newMemberName);
+      const user = await findUserWithEmail(newMemberName);
+      if (user) {
+        await addProjectRequestUser(projectObj.projectInfo.projectId, {
+          userId: user.userId,
+          userName: user.name,
+          photoURL: user.profileImg,
+          email: user.email,
+        });
+        alert('접수되었습니다\n리더의 승인 후 유저가 추가됩니다');
+      } else {
+        alert('존재하지 않는 유저입니다');
+      }
       setIsAddmembers(false);
     } else if (name === 'add-channels') {
       const chatroomId = await createChatroom({
@@ -115,7 +131,7 @@ const ProjectNavigation = ({
           >
             <span>Enter member's email</span>
             <input
-              type="text"
+              type="email"
               placeholder="Enter member's email"
               id="chatList__add-members"
               onChange={onChange}

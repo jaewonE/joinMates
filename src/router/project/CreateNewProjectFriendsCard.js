@@ -43,10 +43,21 @@ const CreateNewProjectFriendsCard = ({
     handleSubmit(e);
   };
   const addMembers = () => {
+    console.log(memberList);
     if (userObj.userId === searchingResult.userId) {
-      alert('You are already a member');
+      alert('이미 추가된 인원입니다');
     } else {
-      setMemberList([...memberList, searchingResult]);
+      let overlap = false;
+      for (let i = 0; i < Array.from(memberList).length; i++) {
+        if (memberList[i].userId === searchingResult.userId) {
+          overlap = true;
+          alert('이미 추가된 인원입니다');
+          break;
+        }
+      }
+      if (!overlap) {
+        setMemberList([...memberList, searchingResult]);
+      }
     }
   };
   return (
@@ -97,6 +108,10 @@ const CreateNewProjectFriendsCard = ({
         )}
       </div>
       <ul className="friends-memberList-wrapper">
+        <li key={userObj.email} className="friends-memberList-memeber">
+          <img src={userObj.photoURL} alt="img" />
+          <span>{userObj.userName}</span>
+        </li>
         {memberList.map((member) => {
           return (
             <li key={member.email} className="friends-memberList-memeber">

@@ -46,7 +46,7 @@ const Project = ({
           />
           <React.Fragment>
             {editProjectInfo ? (
-              <EditProjectInfo projectObj={projectObj} />
+              <EditProjectInfo projectObj={projectObj} userObj={userObj} />
             ) : (
               <React.Fragment>
                 {chatroomPath ? (

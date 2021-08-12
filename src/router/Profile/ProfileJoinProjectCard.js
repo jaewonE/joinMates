@@ -56,38 +56,48 @@ const ProfileJoinProjectCard = ({ userObj, setUserObj }) => {
     }
     return true;
   };
-  const defineOverlopRequest = (projectId) => {
-    const requestMessages = Array.from(userObj.requestMessages);
-    console.log(requestMessages);
-    console.log(projectId);
-    for (let i = 0; i < requestMessages.length; i++) {
-      if (projectId === requestMessages[i].projectId) {
-        return false;
-      }
-    }
-    return true;
-  };
   const joinProject = async () => {
     const projectId = projectList[count].id;
-    if (defineNotUserProject() && defineOverlopRequest(projectId)) {
-      await addProjectRequestUser(projectId, userObj);
+    if (defineNotUserProject()) {
       const oldRequestMessages = Array.from(userObj.requestMessages);
-      const newRequestMessages = [
-        ...oldRequestMessages,
-        {
+      let moveOn = true;
+      let newRequestMessages = [];
+      for (let i = 0; i < oldRequestMessages.length; i++) {
+        if (projectId === oldRequestMessages[i].projectId) {
+          if (oldRequestMessages[i].state === 'reject') {
+            const confirm = window.confirm(
+              '거절된 프로젝트입니다\n재신청 하시겠습니까?'
+            );
+            if (confirm) {
+              moveOn = true;
+            } else {
+              moveOn = false;
+            }
+          } else {
+            moveOn = false;
+          }
+        } else {
+          newRequestMessages.push(oldRequestMessages[i]);
+        }
+      }
+      if (moveOn) {
+        await addProjectRequestUser(projectId, userObj);
+        newRequestMessages.push({
           projectName: projectList[count].name,
           projectId: projectList[count].id,
           projectImg: projectList[count].projectImg,
           leader: projectList[count].leader,
           requestDate: Date.now(),
           state: 'pending',
-        },
-      ];
-      setUserObj({
-        ...userObj,
-        requestMessages: newRequestMessages,
-      });
-      alert('Successfully send request message');
+        });
+        setUserObj({
+          ...userObj,
+          requestMessages: newRequestMessages,
+        });
+        alert('Successfully send request message');
+      } else {
+        alert('이미 요청된 프로젝트입니다');
+      }
     } else {
       alert('This project has already subscribed or request');
     }

@@ -199,6 +199,7 @@
   justify-content: flex-start;
   align-items: center;
 }
+.chatList__add input[type='email'],
 .chatList__add input[type='text'] {
   width: 80%;
   height: 30px;

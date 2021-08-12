@@ -304,10 +304,14 @@ const getUserObject = async () => {
       ).data();
       const userList = Array.from(projectObj.userInfo);
       if (userList.indexOf(userId) + 1) {
+        let chatroomPath = '';
+        if (Array.from(projectObj.chatList).length) {
+          chatroomPath = projectObj.chatList[0];
+        }
         return {
           projectInfo: projectObj.projectInfo,
           lastEditedProject: {
-            chatroomPath: projectObj.chatList ? projectObj.chatList[0] : '',
+            chatroomPath,
             projectPath: {
               id: projectObj.projectInfo.projectId,
               name: projectObj.projectInfo.projectName,
@@ -622,8 +626,14 @@ const deleteProjectChannel = async (projectId, deleteList, setIsDeleteDone) => {
 
 const updateUserObj = async (userObj) => {
   try {
-    await fireStore.collection('userList').doc(userObj.userId).update(userObj);
+    if (userObj.userId) {
+      await fireStore
+        .collection('userList')
+        .doc(userObj.userId)
+        .update(userObj);
+    }
   } catch (error) {
+    console.log(userObj);
     console.error(error);
   }
 };
@@ -736,7 +746,7 @@ const findUserWithEmail = async (email) => {
 };
 
 const addProjectRequestUser = async (projectId, userObj) => {
-  const data = (await fireStore.doc(`project/${projectId}`).get()).data();
+  let data = (await fireStore.doc(`project/${projectId}`).get()).data();
   const oldRequestUserList = Array.from(data.requestUserList);
   const requestUserList = [
     ...oldRequestUserList,
@@ -747,10 +757,9 @@ const addProjectRequestUser = async (projectId, userObj) => {
       email: userObj.email,
     },
   ];
-  await fireStore.doc(`project/${projectId}`).update({
-    ...data,
-    requestUserList,
-  });
+  data.requestUserList = requestUserList;
+  console.log(data);
+  await fireStore.doc(`project/${projectId}`).update(data);
 };
 
 const addUserInProject = async (projectId, userId) => {
@@ -764,13 +773,25 @@ const addUserInProject = async (projectId, userId) => {
   if (Array.from(data.chatList).length) {
     chatroom = data.chatList[0];
   }
+  // let userObj = (
+  //   await fireStore.collection('userList').doc(userId).get()
+  // ).data();
+  // const requestMessages = Array.from(userObj.requestMessages);
+  // for (let i = 0; i < requestMessages.length; i++) {
+  //   if (requestMessages[i].projectId === projectId) {
+  //     requestMessages[i].state = 'fulfilled';
+  //     break;
+  //   }
+  // }
+  // userObj.requestMessages = requestMessages;
+  // await fireStore.collection('userList').doc(userId).update(userObj);
   return {
     projectInfo: data.projectInfo,
     chatroom,
   };
 };
 
-const addProjectMember = async (projectId, userId) => {
+const addProjectMember = async (projectId, userId, leaderObj) => {
   const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
   const oldRequestUserList = Array.from(projectObj.requestUserList);
   let requestUserList = [];
@@ -783,24 +804,69 @@ const addProjectMember = async (projectId, userId) => {
     await fireStore.collection('userList').doc(userId).get()
   ).data();
   let requestMessages = Array.from(userObj.requestMessages);
-  for (let i = 0; requestMessages.length; i++) {
-    if (requestMessages[i].projectId === projectId) {
-      requestMessages[i].state = 'resolve';
-      break;
+  let noMessage = true;
+  if (requestMessages.length) {
+    for (let i = 0; requestMessages.length; i++) {
+      const message = requestMessages[i];
+      const projectId = message.projectId;
+      if (message.projectId === projectId) {
+        message.state = 'resolve';
+        noMessage = false;
+        break;
+      }
     }
   }
-  await fireStore
-    .collection('userList')
-    .doc(userId)
-    .update({
-      ...userObj,
-      requestMessages,
-    });
+  console.log(noMessage);
+  console.log(leaderObj);
+  console.log(userId);
+  if (noMessage) {
+    await sendAttendMessageWhenAddMember(
+      projectObj.projectInfo,
+      leaderObj,
+      userId
+    );
+  } else {
+    await fireStore
+      .collection('userList')
+      .doc(userId)
+      .update({
+        ...userObj,
+        requestMessages,
+      });
+  }
   await fireStore.doc(`project/${projectId}`).update({
     ...projectObj,
     requestUserList,
   });
   return requestUserList;
+};
+
+const sendAttendMessageWhenAddMember = async (
+  projectInfo,
+  leaderObj,
+  userId
+) => {
+  const requestObj = {
+    leader: {
+      email: leaderObj.email,
+      id: leaderObj.userId,
+      name: leaderObj.userName,
+      profileImg: leaderObj.photoURL,
+    },
+    projectImg: projectInfo.projectImg,
+    projectId: projectInfo.projectId,
+    projectName: projectInfo.projectName,
+    requestDate: Date.now(),
+    state: 'request',
+  };
+  let userObj = (
+    await fireStore.collection('userList').doc(userId).get()
+  ).data();
+  const requestMessages = [...userObj.requestMessages, requestObj];
+  userObj.requestMessages = requestMessages;
+  console.log(requestMessages);
+  console.log(userObj);
+  await fireStore.collection('userList').doc(userId).update(userObj);
 };
 
 const rejectRequestMember = async (projectId, userId) => {
@@ -836,6 +902,43 @@ const rejectRequestMember = async (projectId, userId) => {
   return requestUserList;
 };
 
+const sendAttendMessageWhenCreateProject = async (
+  leaderObj,
+  memberObjList,
+  projectInfo
+) => {
+  const requestObj = {
+    leader: {
+      email: leaderObj.email,
+      id: leaderObj.userId,
+      name: leaderObj.userName,
+      profileImg: leaderObj.photoURL,
+    },
+    projectImg: projectInfo.projectImg,
+    projectId: projectInfo.projectId,
+    projectName: projectInfo.projectName,
+    requestDate: Date.now(),
+    state: 'request',
+  };
+  console.log(requestObj);
+  console.log(memberObjList);
+  await Promise.all(
+    Array.from(memberObjList).map(async (memberObj) => {
+      const userId = memberObj.userId;
+      let userObj = (
+        await fireStore.collection('userList').doc(userId).get()
+      ).data();
+      console.log(userObj);
+      const requestMessages = [...userObj.requestMessages, requestObj];
+      userObj.requestMessages = requestMessages;
+      console.log(requestMessages);
+      console.log(userObj);
+      await fireStore.collection('userList').doc(userId).update(userObj);
+      return 'done';
+    })
+  );
+};
+
 //chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
 export {
   authWithEmailAndPassword,
@@ -868,4 +971,5 @@ export {
   deleteProjectChannel,
   addProjectMember,
   rejectRequestMember,
+  sendAttendMessageWhenCreateProject,
 };
