@@ -1,0 +1,117 @@
+.editRequest-wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+.editRequestList-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.requestMember-wrapper {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  background-color: rgb(224, 153, 224);
+  border: none;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.requestMember__marked {
+  width: 15px;
+  height: 100%;
+  background-color: #8977ad;
+}
+
+.requestMember__index {
+  width: 40px;
+  height: 100%;
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  padding-left: 10px;
+  margin-right: 10px;
+}
+.requestMember-container {
+  width: 100%;
+  height: 100%;
+  min-width: 100px;
+  display: flex;
+}
+.requestMember__img-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.requestMember__img-wrapper img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+.requestMember__info-wrapper {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15px;
+  padding-bottom: 9px;
+}
+.requestMember__info-name {
+  font-size: 25px;
+  font-weight: 700;
+  color: white;
+  padding-bottom: 3px;
+  overflow: hidden;
+}
+.requestMember__info-email {
+  display: flex;
+  justify-content: flex-start;
+  overflow: hidden;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  padding-top: 1px;
+  overflow: hidden;
+}
+.requestMember__check-wrapper {
+  width: 180px;
+  min-width: 180px;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.requestMember__check-wrapper input {
+  width: 70px;
+  height: 55px;
+  border-radius: 10px;
+  background-color: #8977ad;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.NoEditRequest-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.5);
+}

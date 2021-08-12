@@ -22,7 +22,9 @@ const EditProjectInfo = ({ projectObj }) => {
         {isEditProjectCard && <EditProjectCard projectObj={projectObj} />}
         {isEditchannelCard && <EditChannelCard projectObj={projectObj} />}
         {isEditMemberCard && <EditMemberCard projectObj={projectObj} />}
-        {isEditRequestCard && <EditRequestMessageCard />}
+        {isEditRequestCard && (
+          <EditRequestMessageCard projectObj={projectObj} />
+        )}
       </div>
     </div>
   );

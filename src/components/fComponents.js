@@ -621,7 +621,11 @@ const deleteProjectChannel = async (projectId, deleteList, setIsDeleteDone) => {
 };
 
 const updateUserObj = async (userObj) => {
-  await fireStore.collection('userList').doc(userObj.userId).update(userObj);
+  try {
+    await fireStore.collection('userList').doc(userObj.userId).update(userObj);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const getProjectInfo = async (projectId, setFunc) => {
@@ -751,25 +755,9 @@ const addProjectRequestUser = async (projectId, userObj) => {
 
 const addUserInProject = async (projectId, userId) => {
   const data = (await fireStore.doc(`project/${projectId}`).get()).data();
-  const oldRequestUserList = Array.from(data.requestUserList);
-  let requestUserList = [];
-  for (let i = 0; i < oldRequestUserList.length; i++) {
-    if (oldRequestUserList[i].userId !== userId) {
-      requestUserList.push(oldRequestUserList[i]);
-    }
-  }
-  console.log(data.userInfo);
-  console.log('userId: ' + userId);
   const userInfo = [...data.userInfo, userId];
-  console.log(userInfo);
-  console.log({
-    ...data,
-    requestUserList,
-    userInfo,
-  });
   await fireStore.doc(`project/${projectId}`).update({
     ...data,
-    requestUserList,
     userInfo,
   });
   let chatroom = '';
@@ -780,6 +768,72 @@ const addUserInProject = async (projectId, userId) => {
     projectInfo: data.projectInfo,
     chatroom,
   };
+};
+
+const addProjectMember = async (projectId, userId) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  const oldRequestUserList = Array.from(projectObj.requestUserList);
+  let requestUserList = [];
+  for (let i = 0; i < oldRequestUserList.length; i++) {
+    if (oldRequestUserList[i].userId !== userId) {
+      requestUserList = [...requestUserList, oldRequestUserList[i]];
+    }
+  }
+  const userObj = (
+    await fireStore.collection('userList').doc(userId).get()
+  ).data();
+  let requestMessages = Array.from(userObj.requestMessages);
+  for (let i = 0; requestMessages.length; i++) {
+    if (requestMessages[i].projectId === projectId) {
+      requestMessages[i].state = 'resolve';
+      break;
+    }
+  }
+  await fireStore
+    .collection('userList')
+    .doc(userId)
+    .update({
+      ...userObj,
+      requestMessages,
+    });
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    requestUserList,
+  });
+  return requestUserList;
+};
+
+const rejectRequestMember = async (projectId, userId) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  const oldRequestUserList = Array.from(projectObj.requestUserList);
+  let requestUserList = [];
+  for (let i = 0; i < oldRequestUserList.length; i++) {
+    if (oldRequestUserList[i].userId !== userId) {
+      requestUserList = [...requestUserList, oldRequestUserList[i]];
+    }
+  }
+  const userObj = (
+    await fireStore.collection('userList').doc(userId).get()
+  ).data();
+  let requestMessages = Array.from(userObj.requestMessages);
+  for (let i = 0; requestMessages.length; i++) {
+    if (requestMessages[i].projectId === projectId) {
+      requestMessages[i].state = 'reject';
+      break;
+    }
+  }
+  await fireStore
+    .collection('userList')
+    .doc(userId)
+    .update({
+      ...userObj,
+      requestMessages,
+    });
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    requestUserList,
+  });
+  return requestUserList;
 };
 
 //chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
@@ -812,4 +866,6 @@ export {
   updateProjectDescription,
   updateProjectChatList,
   deleteProjectChannel,
+  addProjectMember,
+  rejectRequestMember,
 };
