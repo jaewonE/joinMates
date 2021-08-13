@@ -176,7 +176,10 @@ const createChat = async ({
   if (!path) console.error('createChat Error : no path propoerty');
   if (!userObj.userId)
     console.error('createChat Error : no createrId propoerty');
-  const createTime = String(Date.now());
+  let createTime = String(Date.now());
+  if (chatType === 'img') {
+    chat = await getStorageURLOfChatImg(path, chat, createTime);
+  }
   let chatObj = {
     createrObj: {
       createrId: userObj.userId,
@@ -190,13 +193,10 @@ const createChat = async ({
     isEdited: false,
     isCommit: false,
   };
-  if (chatType === 'text') {
-    await fireStore
-      .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
-      .doc(createTime)
-      .set(chatObj);
-  }
-  //else if(chatType === img)
+  await fireStore
+    .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
+    .doc(createTime)
+    .set(chatObj);
 };
 
 const createCommit = async ({
@@ -238,6 +238,17 @@ const createCommit = async ({
 //   const responseURL = await response.ref.getDownloadURL();
 //   return responseURL;
 // };
+
+const getStorageURLOfChatImg = async (path, imageURL, createTime) => {
+  const fileRef = storage
+    .ref()
+    .child(
+      `projectImg/${path.projectPath.id}/${path.chatroomPath.id}/${createTime}`
+    );
+  const response = await fileRef.putString(imageURL, 'data_url');
+  const responseURL = await response.ref.getDownloadURL();
+  return responseURL;
+};
 
 const uploadProfileImg = async (userObj, imageURL) => {
   const fileRef = storage.ref().child(`profileImg/${userObj.userId}`);

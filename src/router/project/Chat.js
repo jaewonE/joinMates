@@ -23,7 +23,6 @@ const getChatTime = (num) => {
 
 const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
   const [userInput, setUserInput] = useState('');
-  // const [chatPath, setChatPath] = useState('');
   const [chatList, setChatList] = useState([]);
   const onMount = useRef(false);
   const scrollDown = useRef(true);
@@ -107,7 +106,9 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
     setUserInput(value);
   };
   const submitMessage = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     createChat({
       path: {
         projectPath,
@@ -117,6 +118,26 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
       chat: userInput,
     });
     setUserInput('');
+  };
+  const addChatImg = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async (evt) => {
+        const imgURL = await evt.currentTarget.result;
+        createChat({
+          path: {
+            projectPath,
+            chatroomPath,
+          },
+          userObj,
+          chatType: 'img',
+          chat: imgURL,
+        });
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
   };
   return (
     <div className="chat-wrapper">
@@ -156,7 +177,13 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
                 </div>
               </div>
               <div className="chat-msg-content">
-                <div className="chat-msg-text">{chat.doc}</div>
+                {chat.chatType === 'text' ? (
+                  <div className="chat-msg-text">{chat.doc}</div>
+                ) : (
+                  <div className="chat-msg-text">
+                    <img src={chat.doc} alt="img" />
+                  </div>
+                )}
               </div>
             </li>
           );
@@ -164,7 +191,15 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
       </ul>
       <div className="chat__enter">
         <div className="chat__enter-option main-option chat__enter-addFile">
-          <i className="bx bxs-image-add"></i>
+          <label htmlFor="uploadChatImg">
+            <i className="bx bxs-image-add"></i>
+          </label>
+          <input
+            type="file"
+            id="uploadChatImg"
+            accept="image/*"
+            onChange={addChatImg}
+          />
         </div>
         <form onSubmit={submitMessage} className="chat__enter-input">
           <input
