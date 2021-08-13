@@ -20,6 +20,37 @@ const ProjectNavigation = ({
   const [newMemberName, setNewMemberName] = useState('');
   const [newChannelName, setNewChannelName] = useState('');
 
+  const defineLenght = (testString, limitScore) => {
+    const limit = Number(limitScore) + 1;
+    var check_num = /[0-9]/; // 숫자
+    var check_eng = /[a-zA-Z]/; // 문자
+    // var check_spc = /[~!@#$%^&*()_+|<>?:{}]/; // 특수문자
+    var check_kor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // 한글체크
+    let i = 0;
+    let total = 0;
+    let notPermit = false;
+    for (i = 0; i < String(testString).length; i++) {
+      if (check_eng.test(testString[i])) {
+        total += 1;
+      } else if (check_kor.test(testString[i])) {
+        total += 2;
+      } else if (check_num.test(testString[i])) {
+        total += 1;
+      } else {
+        notPermit = true;
+        break;
+      }
+    }
+    if (notPermit) {
+      return 'notPermitInput';
+    } else {
+      if (total >= limit) {
+        return 'overLimit';
+      } else {
+        return null;
+      }
+    }
+  };
   const onClick = (e) => {
     const {
       target: { id },
@@ -50,27 +81,36 @@ const ProjectNavigation = ({
       }
       setIsAddmembers(false);
     } else if (name === 'add-channels') {
-      const chatroomId = await createChatroom({
-        userObj,
-        path: {
-          projectPath,
-          chatroomPath: { id: undefined, name: newChannelName },
-        },
-      });
-      const chatroomObj = { id: chatroomId, name: newChannelName };
-      let lastEditedProjectList = userObj.lastEditedProjectList;
-      for (let i = 0; i < lastEditedProjectList.length; i++) {
-        if (lastEditedProjectList[i].projectPath.name === projectPath.name) {
-          lastEditedProjectList[i].chatroomPath = chatroomObj;
-          setUserObj({
-            ...userObj,
-            lastEditedProjectList,
-          });
+      const error = defineLenght(newChannelName, 18);
+      if (error) {
+        if (error === 'notPermitInput') {
+          alert('숫자, 영어, 한글을 제외한 특수문자, 공백은 허용되지 않습니다');
+        } else if (error === 'overLimit') {
+          alert('한글은 9글자, 영어와 숫자는 18글자만 가능합니다');
         }
+      } else {
+        const chatroomId = await createChatroom({
+          userObj,
+          path: {
+            projectPath,
+            chatroomPath: { id: undefined, name: newChannelName },
+          },
+        });
+        const chatroomObj = { id: chatroomId, name: newChannelName };
+        let lastEditedProjectList = userObj.lastEditedProjectList;
+        for (let i = 0; i < lastEditedProjectList.length; i++) {
+          if (lastEditedProjectList[i].projectPath.name === projectPath.name) {
+            lastEditedProjectList[i].chatroomPath = chatroomObj;
+            setUserObj({
+              ...userObj,
+              lastEditedProjectList,
+            });
+          }
+        }
+        setIsAddChannels(false);
+        setChatroomPath(chatroomObj);
+        setNewChannelName('');
       }
-      setIsAddChannels(false);
-      setChatroomPath(chatroomObj);
-      setNewChannelName('');
     }
   };
   const onChange = (e) => {

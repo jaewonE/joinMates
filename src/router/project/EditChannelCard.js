@@ -10,6 +10,37 @@ const EditChannelCard = ({ projectObj }) => {
   });
   const [deleteList, setDeleteList] = useState([]);
   const [isDeleteDone, setIsDeleteDone] = useState(true);
+  const defineLenght = (testString, limitScore) => {
+    const limit = Number(limitScore) + 1;
+    var check_num = /[0-9]/; // 숫자
+    var check_eng = /[a-zA-Z]/; // 문자
+    // var check_spc = /[~!@#$%^&*()_+|<>?:{}]/; // 특수문자
+    var check_kor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // 한글체크
+    let i = 0;
+    let total = 0;
+    let notPermit = false;
+    for (i = 0; i < String(testString).length; i++) {
+      if (check_eng.test(testString[i])) {
+        total += 1;
+      } else if (check_kor.test(testString[i])) {
+        total += 2;
+      } else if (check_num.test(testString[i])) {
+        total += 1;
+      } else {
+        notPermit = true;
+        break;
+      }
+    }
+    if (notPermit) {
+      return 'notPermitInput';
+    } else {
+      if (total >= limit) {
+        return 'overLimit';
+      } else {
+        return null;
+      }
+    }
+  };
   const toggleCSS = (toggleTarget, currentIconClass, input, btn) => {
     if (currentIconClass === 'bx bxs-edit') {
       //start editing
@@ -83,10 +114,19 @@ const EditChannelCard = ({ projectObj }) => {
       //channel name has overlap
       alert('중복된 채널명입니다');
     } else {
-      const toggleTarget = parentNode.childNodes[2].childNodes[0];
-      const currentIconClass = toggleTarget.classList.value;
-      setNewChanName(channel, changedTitle);
-      toggleCSS(toggleTarget, currentIconClass, e.target[0], e.target[1]);
+      const error = defineLenght(changedTitle, 18);
+      if (error) {
+        if (error === 'notPermitInput') {
+          alert('숫자, 영어, 한글을 제외한 특수문자, 공백은 허용되지 않습니다');
+        } else if (error === 'overLimit') {
+          alert('한글은 9글자, 영어와 숫자는 18글자만 가능합니다');
+        }
+      } else {
+        const toggleTarget = parentNode.childNodes[2].childNodes[0];
+        const currentIconClass = toggleTarget.classList.value;
+        setNewChanName(channel, changedTitle);
+        toggleCSS(toggleTarget, currentIconClass, e.target[0], e.target[1]);
+      }
     }
   };
   const checkDelete = (e) => {
