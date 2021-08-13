@@ -20,7 +20,18 @@ const authWithEmailAndPassword = async ({
       return { data: null, error: null };
     }
   } catch (error) {
-    return { data: null, error: error.message };
+    const code = error.code;
+    if (code === 'auth/invalid-email') {
+      return { data: null, error: '존재하지 않는 이메일입니다' };
+    } else if (code === 'auth/user-disabled') {
+      return { data: null, error: '존재하지 않거나 잘못된 이메일입니다' };
+    } else if (code === 'auth/user-not-found') {
+      return { data: null, error: '존재하지 않는 유저입니다' };
+    } else if (code === 'auth/wrong-password') {
+      return { data: null, error: '잘못된 비밀번호 입니다' };
+    } else {
+      return { data: null, error: error.message };
+    }
   }
 };
 
@@ -39,7 +50,33 @@ const socialAccount = async (name) => {
     if (isNewAccount) await createUserObj(userObj);
     return { data: userObj, error: null };
   } catch (error) {
-    return { data: null, error: error.message };
+    const code = error.code;
+    if (code === 'auth/account-exists-with-different-credential') {
+      return { data: null, error: '이미 존재하는 이메일입니다' };
+    } else if (code === 'auth/auth-domain-config-required') {
+      return { data: null, error: '허용되지 않는 도메인 주소입니다' };
+    } else if (code === 'cancelled-popup-request') {
+      return {
+        data: null,
+        error: '한번에 너무 많은 팝업이 발생하였습니다\n다시 시도해주십시오',
+      };
+    } else if (code === 'auth/operation-not-allowed') {
+      return { data: null, error: '해당 소셜에 맞는 이메일을 사용해주십시오' };
+    } else if (code === 'auth/operation-not-supported-in-this-environment') {
+      return {
+        data: null,
+        error: 'http 또는 https를 제외한 프로트콜은 지원되지 않습니다',
+      };
+    } else if (code === 'auth/popup-blocked') {
+      return { data: null, error: '팝업을 허용해 주십시오' };
+    } else if (code === 'auth/popup-closed-by-user') {
+      return { data: null, error: '' }; //pass
+    } else if (code === 'auth/unauthorized-domain') {
+      console.error(error.message);
+      return { data: null, error: '' };
+    } else {
+      return { data: null, error: error.message };
+    }
   }
 };
 

@@ -60,7 +60,7 @@ const EditChannelCard = ({ projectObj }) => {
       );
     } else {
       //can't find
-      alert("Error: can't change channel name");
+      alert('에러: 채널 이름을 변경할 수 없습니다');
     }
   };
   const isOverlapChannelName = (title) => {

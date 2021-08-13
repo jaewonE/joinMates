@@ -84,7 +84,7 @@ const ProfileCard = ({ userObj, setUserObj }) => {
   const changePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmNewPassword) {
-      alert('new password is not same with comfirm new password');
+      alert('새로운 비밀번호가 다시확인된 비밀번호와 같지 않습니다');
     } else {
       await updatePassword(oldPassword, newPassword);
       editPassword();

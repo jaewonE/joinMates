@@ -94,12 +94,12 @@ const ProfileJoinProjectCard = ({ userObj, setUserObj }) => {
           ...userObj,
           requestMessages: newRequestMessages,
         });
-        alert('Successfully send request message');
+        alert('성공적으로 요청 메세지를 전송하였습니다');
       } else {
         alert('이미 요청된 프로젝트입니다');
       }
     } else {
-      alert('This project has already subscribed or request');
+      alert('이미 존재하는 프로젝트이거나 요청된 프로젝트입니다');
     }
   };
   const changeProjectListPage = (e) => {
