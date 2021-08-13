@@ -1,8 +1,30 @@
+import { releaseProjectMember } from 'components/fComponents';
 import React, { useState } from 'react';
 
-const EditMemberCard = ({ projectObj }) => {
+const EditMemberCard = ({ projectObj, userObj }) => {
   const [userObjList, setUserObjList] = useState(projectObj.userObjList);
   const [cardMember, setCardMember] = useState(null);
+  const releaseMember = async (e) => {
+    const {
+      target: { name },
+    } = e;
+    if (userObj.userId === name) {
+      alert('리더는 프로젝트에서 제외할 수 없습니다');
+    } else {
+      const relaseUserName = await releaseProjectMember(
+        projectObj.projectInfo.projectId,
+        name
+      );
+      let newUserObjList = [];
+      for (let i = 0; i < Array.from(userObjList).length; i++) {
+        if (userObjList[i].userId !== name) {
+          newUserObjList.push(userObjList[i]);
+        }
+      }
+      alert(`${relaseUserName}은 자유를 찾아 떠났습니다`);
+      setUserObjList(newUserObjList);
+    }
+  };
   return (
     <div className="editMember-wrapper">
       <div className="editMember-listwrapper">
@@ -39,7 +61,12 @@ const EditMemberCard = ({ projectObj }) => {
               <span className="memberCard__info-name">{cardMember.name}</span>
               <span className="memberCard__info-email">{cardMember.email}</span>
             </div>
-            <input type="button" value="Release" />
+            <input
+              type="button"
+              name={cardMember.userId}
+              onClick={releaseMember}
+              value="Release"
+            />
           </div>
         ) : (
           <div className="empty-memberCard">Select Member</div>

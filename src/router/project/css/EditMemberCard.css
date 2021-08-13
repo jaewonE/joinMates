@@ -104,12 +104,14 @@
   height: 150px;
   border: none;
   border-radius: 10%;
+  object-fit: cover;
 }
 .memberCard__info {
   width: 150px;
   height: 45px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .memberCard__info-name,
 .memberCard__info-email {
@@ -117,6 +119,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .memberCard__info-name {
   height: 30px;

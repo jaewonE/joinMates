@@ -260,7 +260,6 @@ const createCommit = async ({
     isCommit: true,
     commitToId,
   };
-  console.log(commitObj);
   if (type === 'text') {
     await fireStore
       .collection(`project/${path.projectPath.id}/${path.chatroomPath.id}`)
@@ -461,13 +460,13 @@ const getUserComfirm = async (currentPassword) => {
       );
       return { user, credential, error: null };
     } catch (error) {
-      return { user: null, credential: null, error: 'wrong password' };
+      return { user: null, credential: null, error: '잘못된 비밀번호입니다' };
     }
   } else {
     return {
       user: null,
       credential: null,
-      error: 'confirm fail: user cancel the confirm alert',
+      error: null, //유저가 창을 종료한 경우: pass
     };
   }
 };
@@ -489,7 +488,9 @@ const deleteAccount = async () => {
           await fireStore.collection('userList').doc(user.uid).delete();
         },
         () => {
-          alert(error.message);
+          if (error) {
+            alert(error);
+          }
         }
       );
     })
@@ -509,10 +510,12 @@ const updatePassword = async (currentPassword, newPassword) => {
       const result = user.updatePassword(newPassword);
       result.then(
         function () {
-          alert('Sucessfully change password');
+          alert('성공적으로 비밀번호를 변경하였습니다');
         },
         function (error) {
-          alert(error.message);
+          if (error) {
+            alert(error);
+          }
         }
       );
     })
@@ -532,10 +535,12 @@ const updateEmail = async (newEmail, currentPassword) => {
       const result = user.updateEmail(newEmail);
       result.then(
         async () => {
-          alert('Sucessfully change email');
+          alert('성공적으로 이메일을 변경하였습니다');
         },
         function (error) {
-          alert(error.message);
+          if (error) {
+            alert(error);
+          }
         }
       );
     })
@@ -547,7 +552,7 @@ const updateEmail = async (newEmail, currentPassword) => {
 const updateUserName = async (userName) => {
   await authService.currentUser.updateProfile({ displayName: userName }).then(
     async () => {
-      alert('Sucessfully change user name');
+      alert('성공적으로 이름을 변경하였습니다');
     },
     function (error) {
       alert(error.message);
@@ -559,7 +564,7 @@ const updateUserProfileImg = async (userObj, profileImg) => {
   const responseURL = await uploadProfileImg(userObj, profileImg);
   await authService.currentUser.updateProfile({ photoURL: responseURL }).then(
     async () => {
-      alert('Sucessfully change profile image');
+      alert('성공적으로 프로필 사진을 변경하였습니다');
     },
     function (error) {
       alert(error.message);
@@ -578,10 +583,10 @@ const updateProjectImg = async (projectId, projectImg) => {
       ...projectObj,
       projectInfo,
     });
-    alert('Sucessfully change project image');
+    alert('성공적으로 프로젝트 사진을 변경했습니다');
     return responseURL;
   } else {
-    alert("Error: can't upload project image");
+    alert('에러: 프로젝트 이미지를 변경 할 수 없습니다');
   }
 };
 
@@ -593,7 +598,7 @@ const updateProjectName = async (projectId, projectName) => {
     ...projectObj,
     projectInfo,
   });
-  alert('Sucessfully change project name');
+  alert('성공적으로 프로적트 이름을 변경하였습니다');
 };
 
 const updateProjectDescription = async (projectId, description) => {
@@ -602,7 +607,7 @@ const updateProjectDescription = async (projectId, description) => {
     ...projectObj,
     description,
   });
-  alert('Sucessfully change project description');
+  alert('성공적으로 프로젝트 설명을 변경하였습니다');
 };
 
 const updateProjectChatList = async (projectId, chatList) => {
@@ -666,7 +671,7 @@ const deleteProjectChannel = async (projectId, deleteList, setIsDeleteDone) => {
       }
     })
     .catch((error) => {
-      console.log('Error getting document:', error);
+      console.error('Error getting document:', error);
     });
   setIsDeleteDone(true);
   return Array.from(chatList);
@@ -681,7 +686,6 @@ const updateUserObj = async (userObj) => {
         .update(userObj);
     }
   } catch (error) {
-    console.log(userObj);
     console.error(error);
   }
 };
@@ -713,17 +717,6 @@ const getProjectInfo = async (projectId, setFunc) => {
       };
       setFunc(projectInfo);
     });
-  // return new Promise(resolve => {
-  //     const waitForValue = setInterval(()=> {
-  //         if(projectInfo) {
-  //             clearInterval(waitForValue);
-  //             setFunc(projectInfo);
-  //             resolve(bringProjectObj);
-  //         } else {
-  //             console.log("waiting...");
-  //         };
-  //     },100);
-  // });
   return bringProjectObj;
 };
 
@@ -806,7 +799,6 @@ const addProjectRequestUser = async (projectId, userObj) => {
     },
   ];
   data.requestUserList = requestUserList;
-  console.log(data);
   await fireStore.doc(`project/${projectId}`).update(data);
 };
 
@@ -864,9 +856,6 @@ const addProjectMember = async (projectId, userId, leaderObj) => {
       }
     }
   }
-  console.log(noMessage);
-  console.log(leaderObj);
-  console.log(userId);
   if (noMessage) {
     await sendAttendMessageWhenAddMember(
       projectObj.projectInfo,
@@ -912,8 +901,6 @@ const sendAttendMessageWhenAddMember = async (
   ).data();
   const requestMessages = [...userObj.requestMessages, requestObj];
   userObj.requestMessages = requestMessages;
-  console.log(requestMessages);
-  console.log(userObj);
   await fireStore.collection('userList').doc(userId).update(userObj);
 };
 
@@ -968,23 +955,55 @@ const sendAttendMessageWhenCreateProject = async (
     requestDate: Date.now(),
     state: 'request',
   };
-  console.log(requestObj);
-  console.log(memberObjList);
   await Promise.all(
     Array.from(memberObjList).map(async (memberObj) => {
       const userId = memberObj.userId;
       let userObj = (
         await fireStore.collection('userList').doc(userId).get()
       ).data();
-      console.log(userObj);
       const requestMessages = [...userObj.requestMessages, requestObj];
       userObj.requestMessages = requestMessages;
-      console.log(requestMessages);
-      console.log(userObj);
       await fireStore.collection('userList').doc(userId).update(userObj);
       return 'done';
     })
   );
+};
+
+const releaseProjectMember = async (projectId, userId) => {
+  const projectObj = (await fireStore.doc(`project/${projectId}`).get()).data();
+  const oldUserInfo = Array.from(projectObj.userInfo);
+  let userInfo = [];
+  for (let i = 0; i < oldUserInfo.length; i++) {
+    if (oldUserInfo[i] !== userId) {
+      userInfo.push(oldUserInfo[i]);
+    }
+  }
+  await fireStore.doc(`project/${projectId}`).update({
+    ...projectObj,
+    userInfo,
+  });
+
+  let userObj = (
+    await fireStore.collection('userList').doc(userId).get()
+  ).data();
+  const oldLastEditedProjectList = Array.from(userObj.lastEditedProjectList);
+  let lastEditedProjectList = [];
+  for (let i = 0; i < oldLastEditedProjectList.length; i++) {
+    if (oldLastEditedProjectList[i].projectPath.id !== projectId) {
+      lastEditedProjectList.push(oldLastEditedProjectList[i]);
+    }
+  }
+  const oldProjectList = Array.from(userObj.projectList);
+  let projectList = [];
+  for (let i = 0; i < oldProjectList.length; i++) {
+    if (oldProjectList[i].projectId !== projectId) {
+      projectList.push(oldProjectList[i]);
+    }
+  }
+  userObj.lastEditedProject = lastEditedProjectList;
+  userObj.projectList = projectList;
+  await fireStore.collection('userList').doc(userId).update(userObj);
+  return userObj.userName;
 };
 
 //chatroom과 project를 추가할 때 특수문자는 안된다고 alert 넣기.
@@ -1020,4 +1039,5 @@ export {
   addProjectMember,
   rejectRequestMember,
   sendAttendMessageWhenCreateProject,
+  releaseProjectMember,
 };

@@ -397,6 +397,7 @@
   height: 60px;
   border: 2px solid #3f0e40;
   border-radius: 50%;
+  object-fit: cover;
 }
 .info-leader__info {
   width: calc(100% - 70px);

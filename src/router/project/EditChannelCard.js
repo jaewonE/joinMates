@@ -126,7 +126,6 @@ const EditChannelCard = ({ projectObj }) => {
           deleteList,
           setIsDeleteDone
         );
-        console.log(newChatList);
         setChatList(newChatList);
       }
     } else {

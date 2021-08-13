@@ -43,7 +43,6 @@ const CreateNewProjectFriendsCard = ({
     handleSubmit(e);
   };
   const addMembers = () => {
-    console.log(memberList);
     if (userObj.userId === searchingResult.userId) {
       alert('이미 추가된 인원입니다');
     } else {

@@ -50,7 +50,6 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
         const scrollHeight = e.target.scrollHeight;
         if (scrollTop < scrollHeight - 1.5 * offsetHeight) {
           scrollDown.current = false;
-          console.log('create chat bottom');
         } else {
           scrollDown.current = true;
         }
@@ -58,7 +57,6 @@ const Chat = ({ userObj, projectObj, projectPath, chatroomPath }) => {
     };
     const bringChatList = () => {
       if (chatSettingObj.current.isUpdateChatList) {
-        console.log('getChatList');
         if (resetChatList.current) {
           resetChatList.current();
         }

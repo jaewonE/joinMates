@@ -353,6 +353,7 @@
   border-radius: 10px;
   margin-right: 10px;
   transition: all 1s ease;
+  overflow: hidden;
 }
 .friends-memberList-memeber span {
   margin-top: 5px;
@@ -360,6 +361,7 @@
   font-size: 15px;
   font-weight: 400;
   overflow: hidden;
+  white-space: nowrap;
 }
 .friends-memberList-memeber img {
   margin-top: 5px;

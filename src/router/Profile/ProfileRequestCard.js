@@ -6,7 +6,6 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
   useEffect(() => {
     let change = false;
     const oldRequestList = Array.from(userObj.requestMessages);
-    console.log(oldRequestList);
     let newRequestList = [];
     for (let i = 0; i < oldRequestList.length; i++) {
       if (oldRequestList[i].state === 'reject') {
@@ -23,8 +22,6 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
         newRequestList.push(oldRequestList[i]);
       }
     }
-    console.log(change);
-    console.log(newRequestList);
     if (change) {
       setUserObj({
         ...userObj,
@@ -32,7 +29,6 @@ const ProfileRequestCard = ({ userObj, setUserObj }) => {
       });
     }
     if (newRequestList.length) {
-      console.log(newRequestList);
       setRequestList(newRequestList);
     } else {
       setRequestList(null);

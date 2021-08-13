@@ -36,7 +36,6 @@ const ProjectNavigation = ({
       target: { name },
     } = e;
     if (name === 'add-members') {
-      console.log(newMemberName);
       const user = await findUserWithEmail(newMemberName);
       if (user) {
         await addProjectRequestUser(projectObj.projectInfo.projectId, {
