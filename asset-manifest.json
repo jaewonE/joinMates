@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/joinMates/static/css/main.0049ffb4.chunk.css",
-    "main.js": "/joinMates/static/js/main.bc1b5e69.chunk.js",
-    "main.js.map": "/joinMates/static/js/main.bc1b5e69.chunk.js.map",
+    "main.css": "/joinMates/static/css/main.25f917d9.chunk.css",
+    "main.js": "/joinMates/static/js/main.d7a797aa.chunk.js",
+    "main.js.map": "/joinMates/static/js/main.d7a797aa.chunk.js.map",
     "runtime-main.js": "/joinMates/static/js/runtime-main.eee68a03.js",
     "runtime-main.js.map": "/joinMates/static/js/runtime-main.eee68a03.js.map",
-    "static/js/2.2cbe3320.chunk.js": "/joinMates/static/js/2.2cbe3320.chunk.js",
-    "static/js/2.2cbe3320.chunk.js.map": "/joinMates/static/js/2.2cbe3320.chunk.js.map",
+    "static/js/2.e819334a.chunk.js": "/joinMates/static/js/2.e819334a.chunk.js",
+    "static/js/2.e819334a.chunk.js.map": "/joinMates/static/js/2.e819334a.chunk.js.map",
     "index.html": "/joinMates/index.html",
-    "static/css/main.0049ffb4.chunk.css.map": "/joinMates/static/css/main.0049ffb4.chunk.css.map",
-    "static/js/2.2cbe3320.chunk.js.LICENSE.txt": "/joinMates/static/js/2.2cbe3320.chunk.js.LICENSE.txt",
+    "static/css/main.25f917d9.chunk.css.map": "/joinMates/static/css/main.25f917d9.chunk.css.map",
+    "static/js/2.e819334a.chunk.js.LICENSE.txt": "/joinMates/static/js/2.e819334a.chunk.js.LICENSE.txt",
     "static/media/Google_icon.4d7d0ca3.png": "/joinMates/static/media/Google_icon.4d7d0ca3.png"
   },
   "entrypoints": [
     "static/js/runtime-main.eee68a03.js",
-    "static/js/2.2cbe3320.chunk.js",
-    "static/css/main.0049ffb4.chunk.css",
-    "static/js/main.bc1b5e69.chunk.js"
+    "static/js/2.e819334a.chunk.js",
+    "static/css/main.25f917d9.chunk.css",
+    "static/js/main.d7a797aa.chunk.js"
   ]
 }
