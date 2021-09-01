@@ -29,6 +29,8 @@ const authWithEmailAndPassword = async ({
       return { data: null, error: '존재하지 않는 유저입니다' };
     } else if (code === 'auth/wrong-password') {
       return { data: null, error: '잘못된 비밀번호 입니다' };
+    } else if (code === 'auth/weak-password') {
+      return { data: null, error: '비밀번호는 최소 6글자입니다' };
     } else {
       return { data: null, error: error.message };
     }
@@ -90,6 +92,31 @@ const ifNewbieConstructUserData = async (data, name = 'set_your_name') => {
     : defaultProfileImg;
   let isNewAccount = data.additionalUserInfo.isNewUser;
   if (isNewAccount) {
+    const leaderObj = (
+      await fireStore
+        .collection('userList')
+        .doc('OpAPuoLnVkepWXPlaTfxEwNiEh52')
+        .get()
+    ).data();
+    const projectInfo = (
+      await fireStore
+        .collection('project')
+        .doc('ff942f30-9e98-4adf-a8da-18aba8b60c8b')
+        .get()
+    ).data().projectInfo;
+    const requestObj = {
+      leader: {
+        email: leaderObj.email,
+        id: leaderObj.userId,
+        name: leaderObj.userName,
+        profileImg: leaderObj.photoURL,
+      },
+      projectImg: projectInfo.projectImg,
+      projectId: projectInfo.projectId,
+      projectName: projectInfo.projectName,
+      requestDate: Date.now(),
+      state: 'request',
+    };
     const userObj = {
       userName,
       userId: data.user.uid,
@@ -99,7 +126,7 @@ const ifNewbieConstructUserData = async (data, name = 'set_your_name') => {
       friends: [],
       projectList: [],
       lastEditedProjectList: [],
-      requestMessages: [],
+      requestMessages: [requestObj],
       setting: {
         seeProjectWithIcon: false,
       },
@@ -336,64 +363,89 @@ const deleteChat = async ({ path = null, type }) => {
   }
 };
 
-const getUserObject = async () => {
-  const userId = authService.currentUser.uid;
-  const userObj = (
-    await fireStore.collection('userList').doc(userId).get()
-  ).data();
-  const projectIdList = Array.from(userObj.projectList).map((project) => {
-    return project.projectId;
-  });
-  const projectListRef = await Promise.all(
-    projectIdList.map(async (projectId) => {
-      const projectObj = (
-        await fireStore.doc(`project/${projectId}`).get()
+const getUserUnprocessedObj = async () => {
+  return await new Promise((resolve) => {
+    const waitForValue = setInterval(async () => {
+      console.count('check');
+      const userId = authService.currentUser.uid;
+      const userObj = (
+        await fireStore.collection('userList').doc(userId).get()
       ).data();
-      const userList = Array.from(projectObj.userInfo);
-      if (userList.indexOf(userId) + 1) {
-        let chatroomPath = '';
-        if (Array.from(projectObj.chatList).length) {
-          chatroomPath = projectObj.chatList[0];
-        }
-        return {
-          projectInfo: projectObj.projectInfo,
-          lastEditedProject: {
-            chatroomPath,
-            projectPath: {
-              id: projectObj.projectInfo.projectId,
-              name: projectObj.projectInfo.projectName,
-            },
-          },
-          reject: false,
-        };
-      } else {
-        //project doesn't have userId: user has except from project by leader.
-        return {
-          projectInfo: projectObj.projectInfo.projectName,
-          lastEditedProject: null,
-          reject: true,
-        };
+      if (userObj) {
+        clearInterval(waitForValue);
+        resolve(userObj);
       }
-    })
-  );
-  let projectList = [];
-  let rejectList = [];
-  let lastEditedProjectList = [];
-  for (let i = 0; i < projectListRef.length; i++) {
-    if (projectListRef[i].reject) {
-      rejectList = [...rejectList, projectListRef[i].projectInfo];
-    } else {
-      projectList = [...projectList, projectListRef[i].projectInfo];
-      lastEditedProjectList = [
-        ...lastEditedProjectList,
-        projectListRef[i].lastEditedProject,
-      ];
+    }, 300);
+  });
+};
+
+const getUserObject = async () => {
+  const userObj = await getUserUnprocessedObj();
+  console.log(userObj);
+  if (
+    userObj.projectList !== undefined &&
+    userObj.projectList !== [] &&
+    userObj.projectList !== null
+  ) {
+    const projectIdList = Array.from(userObj.projectList).map((project) => {
+      return project.projectId;
+    });
+    const projectListRef = await Promise.all(
+      projectIdList.map(async (projectId) => {
+        const projectObj = (
+          await fireStore.doc(`project/${projectId}`).get()
+        ).data();
+        const userList = Array.from(projectObj.userInfo);
+        if (userList.indexOf(userObj.userId) + 1) {
+          let chatroomPath = '';
+          if (Array.from(projectObj.chatList).length) {
+            chatroomPath = projectObj.chatList[0];
+          }
+          return {
+            projectInfo: projectObj.projectInfo,
+            lastEditedProject: {
+              chatroomPath,
+              projectPath: {
+                id: projectObj.projectInfo.projectId,
+                name: projectObj.projectInfo.projectName,
+              },
+            },
+            reject: false,
+          };
+        } else {
+          //project doesn't have userId: user has except from project by leader.
+          return {
+            projectInfo: projectObj.projectInfo.projectName,
+            lastEditedProject: null,
+            reject: true,
+          };
+        }
+      })
+    );
+    let projectList = [];
+    let rejectList = [];
+    let lastEditedProjectList = [];
+    for (let i = 0; i < projectListRef.length; i++) {
+      if (projectListRef[i].reject) {
+        rejectList = [...rejectList, projectListRef[i].projectInfo];
+      } else {
+        projectList = [...projectList, projectListRef[i].projectInfo];
+        lastEditedProjectList = [
+          ...lastEditedProjectList,
+          projectListRef[i].lastEditedProject,
+        ];
+      }
     }
+    return {
+      reject: rejectList,
+      user: { ...userObj, lastEditedProjectList, projectList },
+    };
+  } else {
+    return {
+      reject: null,
+      user: { ...userObj, lastEditedProjectList: [], projectList: [] },
+    };
   }
-  return {
-    reject: rejectList,
-    user: { ...userObj, lastEditedProjectList, projectList },
-  };
 };
 
 const getChatList = ({ path, setFunc, limit = 10 }) => {

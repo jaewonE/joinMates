@@ -16,6 +16,7 @@ import Profile from 'router/Profile/Profile';
 import Setting from 'router/Setting';
 import Project from 'router/project/Project';
 import CreateNewProject from 'router/project/CreateNewProject';
+import joinMates_logo from 'components/css/joinMates-logo.jpeg';
 
 function useRedirectCreateProjectPage(setProjectPath) {
   const [createProjectName, setCreateProjectName] = useState(null);
@@ -214,14 +215,29 @@ function AppRouter() {
           </Switch>
         </Router>
       ) : (
-        <div className="initializing-div">
-          <img
-            src="https://i.ytimg.com/vi/zwzPeHNp9Ms/maxresdefault.jpg"
-            alt="Initializing_Image"
-            id="initializing-img"
-          />
-          <footer>&copy; {new Date().getFullYear()}JoinMates</footer>
-        </div>
+        <React.Fragment>
+          <div class="initializing-div">
+            <img
+              class="initializing-logo"
+              src={joinMates_logo}
+              alt="JoinMates"
+            />
+            <div class="initializing__loading-div">
+              <div id="load">
+                <div>G</div>
+                <div>N</div>
+                <div>I</div>
+                <div>D</div>
+                <div>A</div>
+                <div>O</div>
+                <div>L</div>
+              </div>
+            </div>
+          </div>
+          <footer id="joinMates-footer">
+            &copy; {new Date().getFullYear()}JoinMates
+          </footer>
+        </React.Fragment>
       )}
     </React.Fragment>
   );

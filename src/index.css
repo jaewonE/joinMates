@@ -24,6 +24,7 @@ body,
 /*components*/
 @import url('components/css/reset.css');
 @import url('components/css/router.css');
+@import url('components/css/routerLoading.css');
 @import url('components/css/profileImg.css');
 @import url('components/css/Navigation.css');
 
