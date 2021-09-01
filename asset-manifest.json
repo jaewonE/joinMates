@@ -1,21 +1,22 @@
 {
   "files": {
-    "main.css": "/joinMates/static/css/main.25f917d9.chunk.css",
-    "main.js": "/joinMates/static/js/main.d7a797aa.chunk.js",
-    "main.js.map": "/joinMates/static/js/main.d7a797aa.chunk.js.map",
+    "main.css": "/joinMates/static/css/main.a6e60070.chunk.css",
+    "main.js": "/joinMates/static/js/main.cb282680.chunk.js",
+    "main.js.map": "/joinMates/static/js/main.cb282680.chunk.js.map",
     "runtime-main.js": "/joinMates/static/js/runtime-main.eee68a03.js",
     "runtime-main.js.map": "/joinMates/static/js/runtime-main.eee68a03.js.map",
     "static/js/2.e819334a.chunk.js": "/joinMates/static/js/2.e819334a.chunk.js",
     "static/js/2.e819334a.chunk.js.map": "/joinMates/static/js/2.e819334a.chunk.js.map",
     "index.html": "/joinMates/index.html",
-    "static/css/main.25f917d9.chunk.css.map": "/joinMates/static/css/main.25f917d9.chunk.css.map",
+    "static/css/main.a6e60070.chunk.css.map": "/joinMates/static/css/main.a6e60070.chunk.css.map",
     "static/js/2.e819334a.chunk.js.LICENSE.txt": "/joinMates/static/js/2.e819334a.chunk.js.LICENSE.txt",
-    "static/media/Google_icon.4d7d0ca3.png": "/joinMates/static/media/Google_icon.4d7d0ca3.png"
+    "static/media/Google_icon.4d7d0ca3.png": "/joinMates/static/media/Google_icon.4d7d0ca3.png",
+    "static/media/joinMates-logo.d6fc655f.jpeg": "/joinMates/static/media/joinMates-logo.d6fc655f.jpeg"
   },
   "entrypoints": [
     "static/js/runtime-main.eee68a03.js",
     "static/js/2.e819334a.chunk.js",
-    "static/css/main.25f917d9.chunk.css",
-    "static/js/main.d7a797aa.chunk.js"
+    "static/css/main.a6e60070.chunk.css",
+    "static/js/main.cb282680.chunk.js"
   ]
 }
