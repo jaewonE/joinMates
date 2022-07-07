@@ -6,6 +6,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CommonModule } from './common/common.module';
+import { UserModule } from './user/user.module';
+import { ChatRoomModule } from './chatRoom/chatRoom.module';
+import { ChatModule } from './chat/chat.module';
+import { User } from './user/entities/user.entity';
+import { Chat } from './chat/entities/chat.entity';
+import { ChatRoom } from './chatRoom/entities/chatRoom.entity';
 
 @Module({
   imports: [
@@ -35,7 +41,7 @@ import { CommonModule } from './common/common.module';
           }),
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV !== 'production',
-      entities: [],
+      entities: [User, Chat, ChatRoom],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       // playground: process.env.NODE_ENV !== 'production',
@@ -60,6 +66,9 @@ import { CommonModule } from './common/common.module';
       },
     }),
     CommonModule,
+    UserModule,
+    ChatRoomModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
